@@ -1,11 +1,5 @@
 //script.js
-const settingsMenuOptions = [
-    { title: "Network", icon: "🌐" },
-    { title: "Display", icon: "🖥️" },
-    { title: "Account", icon: "👤" },
-    { title: "About", icon: "ℹ️" },
-    { title: "Updates", icon: "🔄" }
-];
+
 const ads = {
     ad1: ["images/ads/ad1_1.jpg", "images/ads/ad4_1.jpg", "images/ads/ad5_1.jpg"],
     ad2: ["images/ads/ad2_1.jpg", "images/ads/ad6_1.jpg", "images/ads/ad7_1.jpg"],
@@ -18,7 +12,7 @@ const centerIconsData = [
     { title: "Settings", img: "images/webpimg/my-favourite-Apps.webp", url: "" },
     { title: "Account", img: "images/webpimg/my_Account_information.webp", url: "" },
     { title: "Favorite", img: "images/webpimg/Setup-Settings.webp", url: "" },
-    { title: "Network", img: "images/webpimg/partners-local-channels.webp", url: "" },
+    { title: "Network", img: "images/webpimg/partners-local-channels.webp", url: "http://103.189.178.123/" },
     { title: "Payments", img: "images/webpimg/News-Clips.webp", url: "" },
     { title: "Favorite", img: "images/webpimg/kids-corner.webp", url: "" },
     { title: "Network", img: "images/webpimg/ShoppingCard.webp", url: "" },
@@ -50,21 +44,19 @@ let favoriteChannels = [
 
 let currentIndex = 0;
 let focusableItems = [];
+let isKeyboardVisible = false;
 let isAppOpen = false;
-let isSettingsOpen = false;
-let settingsIndex = 0;
 
-// --- TIME UPDATER ---
+// --- TIME + DATE + YEAR ---
 function updateDateTime() {
     const e = document.getElementById("time");
-    if(!e) return;
     const now = new Date();
     const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     e.textContent = now.toLocaleDateString('en-US', options) + " | " + now.toLocaleTimeString('en-US', { hour12:false });
 }
 setInterval(updateDateTime, 1000);
 
-// --- RENDER UI ---
+// --- UI Rendering ---
 function renderUI() {
     const grid = document.getElementById('mainIconGrid');
     grid.innerHTML = "";
@@ -91,162 +83,114 @@ function renderUI() {
     });
 }
 
-// --- FOCUS LOGIC ---
+// --- Focus & Navigation ---
 function setupFocus() {
-    // Collect all navigatable elements
     focusableItems = Array.from(document.querySelectorAll('.logo-box, .icon-item, .app-icon'));
     updateFocus();
 }
-
 function updateFocus() {
-    if (isAppOpen || isSettingsOpen) return;
-
+    if (isKeyboardVisible) return;
     focusableItems.forEach(item => item.classList.remove('focused'));
     const activeItem = focusableItems[currentIndex];
     if (activeItem) {
         activeItem.classList.add('focused');
         activeItem.focus();
-        
         const title = activeItem.getAttribute('data-title');
         const data = favoriteChannels.find(f => f.title === title) || centerIconsData.find(c => c.title === title);
-        
         document.getElementById('infoTitle').innerText = title || "ULKA TV";
-        document.getElementById('infoDesc').innerText = data?.description || "Press OK to Open";
+        document.getElementById('infoDesc').innerText = data ? data.description : "Select to open content.";
         activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
-// --- REMOTE KEYBOARD CONTROLLER ---
 document.addEventListener('keydown', (event) => {
     const keyCode = event.keyCode || event.which;
+    if (isAppOpen && (keyCode === 8 || keyCode === 461)) { event.preventDefault(); closeApp(); return; }
+    if (isAppOpen) return;
 
-    // 1. BACK BUTTON (Exits Apps or Settings)
-    if (keyCode === 8 || keyCode === 461 || keyCode === 27) { 
-        event.preventDefault(); 
-        closeEverything();
-        return; 
-    }
-
-    // 2. IF SETTINGS MENU IS OPEN
-    if (isSettingsOpen) {
-        handleSettingsNavigation(keyCode);
-        return;
-    }
-
-    // 3. IF APP (IFRAME) IS OPEN
-    if (isAppOpen) return; 
-
-    // 4. MAIN DASHBOARD NAVIGATION
     let rowLength = 5;
     const activeItem = focusableItems[currentIndex];
     if (activeItem && activeItem.classList.contains('app-icon')) rowLength = 10;
 
     switch (keyCode) {
-        case 37: // Left
-            if (currentIndex > 0) currentIndex--; 
-            break;
-        case 39: // Right
-            if (currentIndex < focusableItems.length - 1) currentIndex++; 
-            break;
-        case 38: // Up
-            if (currentIndex - rowLength >= 0) currentIndex -= rowLength; 
-            break;
-        case 40: // Down
-            if (currentIndex + rowLength < focusableItems.length) currentIndex += rowLength; 
-            break;
-        case 13: // OK / Enter
-            handleItemSelection();
-            break;
+        case 39: if (currentIndex < focusableItems.length - 1) currentIndex++; break;
+        case 37: if (currentIndex > 0) currentIndex--; break;
+        case 40: if (currentIndex + rowLength < focusableItems.length) currentIndex += rowLength; break;
+        case 38: if (currentIndex - rowLength >= 0) currentIndex -= rowLength; break;
+        case 13: handleItemClick(); break;
     }
     updateFocus();
 });
 
-// --- SELECTION LOGIC ---
-function handleItemSelection() {
+function handleItemClick() {
     const activeItem = focusableItems[currentIndex];
     if (!activeItem) return;
 
     const title = activeItem.getAttribute('data-title');
     const url = activeItem.getAttribute('data-url');
 
+    // Check if Settings is clicked
     if (title === "Settings") {
-        openSettings();
-    } else if (url && url !== "") {
-        openApp(url);
+        showSettingsMenu();
+    } else if (url) {
+        window.location.href = url;
     }
 }
 
-// --- SETTINGS LOGIC ---
-function openSettings() {
-    const overlay = document.getElementById('settingsOverlay');
-    const list = document.getElementById('settingsList');
+// --- Settings Menu Logic ---
+function showSettingsMenu() {
+    const settingsOverlay = document.getElementById('settingsOverlay');
+    const settingsList = document.getElementById('settingsList');
     
-    list.innerHTML = "";
-    settingsMenuOptions.forEach((opt, idx) => {
+    settingsList.innerHTML = ""; // Clear old list
+    settingsMenuOptions.forEach(opt => {
         const div = document.createElement('div');
         div.className = 'setting-option-item';
         div.innerHTML = `<span>${opt.icon}</span> ${opt.title}`;
-        list.appendChild(div);
+        settingsList.appendChild(div);
     });
 
-    overlay.style.display = "flex";
-    isSettingsOpen = true;
-    settingsIndex = 0;
-    updateSettingsFocus();
+    settingsOverlay.style.display = "flex";
+    isAppOpen = true; // To prevent background navigation
 }
 
-function handleSettingsNavigation(keyCode) {
-    const items = document.querySelectorAll('.setting-option-item');
-    if (keyCode === 40 && settingsIndex < items.length - 1) settingsIndex++; // Down
-    if (keyCode === 38 && settingsIndex > 0) settingsIndex--; // Up
-    if (keyCode === 13) {
-        console.log("Selected Setting: " + settingsMenuOptions[settingsIndex].title);
-        // Add specific setting action here
-    }
-    updateSettingsFocus();
-}
-
-function updateSettingsFocus() {
-    const items = document.querySelectorAll('.setting-option-item');
-    items.forEach(i => i.style.background = "#333");
-    if (items[settingsIndex]) {
-        items[settingsIndex].style.background = "red"; // Highlighting selected setting
-        items[settingsIndex].focus();
-    }
-}
-
-// --- APP (IFRAME) LOGIC ---
-function openApp(url) {
+function closeApp() {
     const layer = document.getElementById('appLayer');
-    const iframe = document.getElementById('appIframe');
-    iframe.src = url;
-    layer.style.display = "block";
-    isAppOpen = true;
-}
-
-function closeEverything() {
-    document.getElementById('appLayer').style.display = "none";
-    document.getElementById('settingsOverlay').style.display = "none";
-    document.getElementById('appIframe').src = "";
-    isAppOpen = false;
-    isSettingsOpen = false;
+    const settingsOverlay = document.getElementById('settingsOverlay');
     
-    // Resume Dashboard Focus
+    if (layer) layer.style.display = "none";
+    if (settingsOverlay) settingsOverlay.style.display = "none";
+    
+    isAppOpen = false;
     setTimeout(() => { setupFocus(); updateFocus(); }, 200);
 }
 
-// --- SCALE UI & INITIALIZE ---
+// --- Ads Rotation ---
+let adIndices = { ad1:0, ad2:0, ad3:0 };
+setInterval(() => {
+    ['ad1','ad2','ad3'].forEach((key,i)=>{
+        adIndices[key]=(adIndices[key]+1)%ads[key].length;
+        const img=document.getElementById(`ad-img-${i+1}`);
+        if(img){img.style.opacity=0; setTimeout(()=>{img.src=ads[key][adIndices[key]]; img.style.opacity=1;},500);}
+    });
+},4000);
+
+// --- Scale & Center TV UI ---
 function scaleTVUI() {
-    const baseW = 1800, baseH = 1000;
-    const scale = Math.min(window.innerWidth/baseW, window.innerHeight/baseH);
+    const baseW = 1800, baseH = 1000;  // updated
+    const screenW = window.innerWidth, screenH = window.innerHeight;
+    const scale = Math.min(screenW/baseW, screenH/baseH);
+    const offsetX = (screenW - baseW*scale)/2;
+    const offsetY = (screenH - baseH*scale)/2;
     const tvRoot = document.getElementById("tv-root");
-    tvRoot.style.transform = `translate(${(window.innerWidth - baseW*scale)/2}px, ${(window.innerHeight - baseH*scale)/2}px) scale(${scale})`;
+    tvRoot.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 }
+
 
 window.addEventListener("resize", scaleTVUI);
 window.addEventListener("load", () => {
     renderUI();
     updateDateTime();
+    setTimeout(setupFocus,500);
     scaleTVUI();
-    setTimeout(setupFocus, 500);
 });
