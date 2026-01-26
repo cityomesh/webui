@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ULKATV Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="tv-root">
+    <div id="time"></div>
+
+    <div id="appLayer">
+        <iframe id="appIframe" src="" allowfullscreen></iframe>
+    </div>
+
+    <div id="settingsOverlay" class="settings-modal" style="display: none;">
+        <div class="settings-content">
+            <h2>System Settings</h2>
+            <hr>
+            <div id="settingsList" class="settings-list">
+                </div>
+            <p style="color: #aaa; margin-top: 20px;">Press Back to Exit Settings</p>
+        </div>
+    </div>  
+
+    <div class="main-container">
+        <div class="ads-container">
+            <div class="ad"><img src="images/ads/ad1_1.jpg" id="ad-img-1"></div>
+            <div class="ad"><img src="images/ads/ad2_1.jpg" id="ad-img-2"></div>
+            <div class="ad"><img src="images/ads/ad3_1.jpg" id="ad-img-3"></div>
+        </div>
+
+        <div class="middle-section">
+            <div class="logo-box" tabindex="0" id="mainLogo" 
+                data-url="http://103.189.178.123:4000/" 
+                data-title="ULKA TV">
+                <img src="images/webpimg/Live_tv_channels.webp" alt="Ulka TV Logo" class="main-logo-img">
+            </div>
+            <div class="center-content">
+                <div class="icon-grid" id="mainIconGrid"></div>
+            </div>
+
+            <div class="app-info-panel" id="appDetailPanel">
+                <div class="info-content">
+                    <h2 id="infoTitle">Welcome</h2>
+                    <p id="infoDesc">Select an item to see details</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="fav-section">
+            <h4 class="fav-title">Favourite Apps</h4>
+            <div class="fav-grid" id="favAppGrid"></div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
