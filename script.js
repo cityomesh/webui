@@ -196,14 +196,7 @@
 // });
 
 
-// --- Global State ---
-let currentIndex = 0;
-let focusableItems = [];
-let isAppOpen = false;
-let isSettingsOpen = false;
-let settingsIndex = 0;
-
-// --- Data Structures ---
+// Settings Menu Data
 const settingsMenuOptions = [
     { title: "Network", icon: "🌐" },
     { title: "Display", icon: "🖥️" },
@@ -212,58 +205,70 @@ const settingsMenuOptions = [
     { title: "Updates", icon: "🔄" }
 ];
 
+const ads = {
+    ad1: ["images/ads/ad1_1.jpg", "images/ads/ad4_1.jpg", "images/ads/ad5_1.jpg"],
+    ad2: ["images/ads/ad2_1.jpg", "images/ads/ad6_1.jpg", "images/ads/ad7_1.jpg"],
+    ad3: ["images/ads/ad3_1.jpg", "images/ads/ad8_1.jpg", "images/ads/ad9_1.jpg"]
+};
+
 const centerIconsData = [
     { title: "Radio", img: "images/webpimg/Radio-Channels.webp", url: "" },
     { title: "LiveTV", img: "images/webpimg/Video-on-demand.webp", url: "http://103.189.178.123:4000/" },
-    { title: "Settings", img: "images/webpimg/my-favourite-Apps.webp", url: "OPEN_SETTINGS" },
+    { title: "Settings", img: "images/webpimg/my-favourite-Apps.webp", url: "" },
     { title: "Account", img: "images/webpimg/my_Account_information.webp", url: "" },
     { title: "Favorite", img: "images/webpimg/Setup-Settings.webp", url: "" },
-    { title: "Network", img: "images/webpimg/partners-local-channels.webp", url: "" },
+    { title: "Network", img: "images/webpimg/partners-local-channels.webp", url: "http://103.189.178.123/" },
     { title: "Payments", img: "images/webpimg/News-Clips.webp", url: "" },
     { title: "Favorite", img: "images/webpimg/kids-corner.webp", url: "" },
     { title: "Network", img: "images/webpimg/ShoppingCard.webp", url: "" },
     { title: "Payments", img: "images/webpimg/Network_Testing_diagnostice.webp", url: "http://103.189.178.123/" }
 ];
 
-// Favorite Channels List (20 Apps)
 let favoriteChannels = [
-    { title: "YouTube", img: "images/appstore/ottapps/youtube.png", url: "https://www.youtube.com/tv" },
-    { title: "jiohotstar", img: "images/appstore/ottapps/jiohotstar.png", url: "https://www.hotstar.com/in/home" },
-    { title: "aha", img: "images/appstore/ottapps/aha.png", url: "https://www.aha.video/webepisode/chef-mantra-s05-ep6/" },
-    { title: "netflix", img: "images/appstore/ottapps/netflix.png", url: "https://www.netflix.com/in/login" },
-    { title: "prime_video", img: "images/appstore/ottapps/prime_video.png", url: "https://www.primevideo.com/offers/nonprimehomepage/" },
-    { title: "EtvWin", img: "images/appstore/ottapps/ETV_WIN.png", url: "https://www.etvwin.com/home" },
-    { title: "YouTubeKids", img: "images/appstore/ottapps/youtubekids.png", url: "https://www.youtubekids.com/" },
-    { title: "sonyTv", img: "images/appstore/ottapps/sony_liv.png", url: "https://www.sonyliv.com/" },
-    { title: "me", img: "images/appstore/ottapps/me.png", url: "https://www.mebank.com.au/" },
-    { title: "hungama", img: "images/appstore/ottapps/hungama.png", url: "https://www.hungama.com/" },
-    { title: "hoichoi", img: "images/appstore/ottapps/hoichoi.png", url: "https://www.hoichoi.tv/" },
-    { title: "sunnxt", img: "images/appstore/ottapps/sunnxt.png", url: "https://www.sunnxt.com/" },
-    { title: "AAO_NXT", img: "images/appstore/ottapps/AAO_NXT.png", url: "https://aaonxt.com/" },
-    { title: "STAGE", img: "images/appstore/ottapps/STAGE.png", url: "https://www.stage.in/" },
-    { title: "epicon", img: "images/appstore/ottapps/EPIC_ON.png", url: "https://epicon.in/" },
-    { title: "DOCUBAY", img: "images/appstore/ottapps/DOCUBAY.png", url: "https://www.docubay.com/" },
-    { title: "EROS_NOW", img: "images/appstore/ottapps/EROS_NOW.png", url: "https://erosnow.com/" },
-    { title: "Fancode", img: "images/appstore/ottapps/Fancode.png", url: "https://www.fancode.com/" },
-    { title: "Zee5", img: "images/appstore/ottapps/ZEE5.png", url: "https://www.zee5.com/" },
-    { title: "discovery_plus", img: "images/appstore/ottapps/discovery_plus.png", url: "https://discoveryplus.in/" }
+    { title: "YouTube", img: "images/appstore/ottapps/youtube.png", url: "https://www.youtube.com/tv", description: "Watch unlimited videos." },
+    { title: "jiohotstar", img: "images/appstore/ottapps/jiohotstar.png", url: "https://www.hotstar.com/in/home", description: "Best entertainment videos." },
+    { title: "aha", img: "images/appstore/ottapps/aha.png", url: "https://www.aha.video/webepisode/chef-mantra-s05-ep6/", description: "Check Network Status." },
+    { title: "netflix", img: "images/appstore/ottapps/netflix.png", url: "https://www.netflix.com/in/login", description: "Entertainment and sports." },
+    { title: "prime_video", img: "images/appstore/ottapps/prime_video.png", url: "https://www.primevideo.com/offers/nonprimehomepage/", description: "European cultural channel." },
+    { title: "EtvWin", img: "images/appstore/ottapps/ETV_WIN.png", url: "https://www.etvwin.com/home", description: "Watch live shows and movies." },
+    { title: "YouTubeKids", img: "images/appstore/ottapps/youtubekids.png", url: "https://www.youtubekids.com/", description: "Watch unlimited videos." },
+    { title: "sonyTv", img: "images/appstore/ottapps/sony_liv.png", url: "https://www.sonyliv.com/", description: "Best entertainment videos." },
+    { title: "me", img: "images/appstore/ottapps/me.png", url: "https://www.mebank.com.au/", description: "Check Network Status." },
+    { title: "hungama", img: "images/appstore/ottapps/hungama.png", url: "https://www.hungama.com/", description: "Entertainment and sports." },
+    { title: "hoichoi", img: "images/appstore/ottapps/hoichoi.png", url: "https://www.hoichoi.tv/", description: "European cultural channel." },
+    { title: "sunnxt", img: "images/appstore/ottapps/sunnxt.png", url: "https://www.sunnxt.com/", description: "Watch live shows and movies." },
+    { title: "AAO_NXT", img: "images/appstore/ottapps/AAO_NXT.png", url: "https://aaonxt.com/", description: "Watch unlimited videos." },
+    { title: "STAGE", img: "images/appstore/ottapps/STAGE.png", url: "https://www.stage.in/", description: "Best entertainment videos." },
+    { title: "epicon", img: "images/appstore/ottapps/EPIC_ON.png", url: "https://epicon.in/", description: "Check Network Status." },
+    { title: "DOCUBAY", img: "images/appstore/ottapps/DOCUBAY.png", url: "https://www.docubay.com/", description: "Entertainment and sports." },
+    { title: "EROS_NOW", img: "images/appstore/ottapps/EROS_NOW.png", url: "https://erosnow.com/", description: "European cultural channel." },
+    { title: "Fancode", img: "images/appstore/ottapps/Fancode.png", url: "https://www.fancode.com/", description: "Watch live shows and movies." },
+    { title: "Zee5", img: "images/appstore/ottapps/ZEE5.png", url: "https://www.zee5.com/", description: "European cultural channel." },
+    { title: "discovery_plus", img: "images/appstore/ottapps/discovery_plus.png", url: "https://discoveryplus.in/", description: "Watch live shows and movies." }
 ];
 
-// --- Initialization ---
-window.addEventListener("load", () => {
-    renderUI();
-    updateDateTime();
-    scaleTVUI();
-    setTimeout(setupFocus, 500);
-});
+let currentIndex = 0;
+let focusableItems = [];
+let isAppOpen = false;
 
+// Time Update
+function updateDateTime() {
+    const e = document.getElementById("time");
+    if (!e) return;
+    const now = new Date();
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    e.textContent = now.toLocaleDateString('en-US', options) + " | " + now.toLocaleTimeString('en-US', { hour12:false });
+}
+setInterval(updateDateTime, 1000);
+
+// UI Rendering
 function renderUI() {
     const grid = document.getElementById('mainIconGrid');
     grid.innerHTML = "";
     centerIconsData.forEach(item => {
         const div = document.createElement('div');
         div.className = 'icon-item';
-        div.tabIndex = 0;
+        div.tabIndex = 0; 
         div.setAttribute('data-url', item.url);
         div.setAttribute('data-title', item.title);
         div.innerHTML = `<img src="${item.img}" alt="${item.title}">`;
@@ -283,151 +288,123 @@ function renderUI() {
     });
 }
 
-// --- Navigation Logic ---
 function setupFocus() {
-    // Collect Logo, Icons (5 per row), and Apps (10 per row)
     focusableItems = Array.from(document.querySelectorAll('.logo-box, .icon-item, .app-icon'));
     updateFocus();
 }
 
 function updateFocus() {
-    if (isAppOpen || isSettingsOpen) return;
+    if (isAppOpen) return;
     focusableItems.forEach(item => item.classList.remove('focused'));
     const activeItem = focusableItems[currentIndex];
     if (activeItem) {
         activeItem.classList.add('focused');
         activeItem.focus();
-        document.getElementById('infoTitle').innerText = activeItem.getAttribute('data-title') || "ULKA TV";
+        const title = activeItem.getAttribute('data-title');
+        const infoTitleElem = document.getElementById('infoTitle');
+        if (infoTitleElem) infoTitleElem.innerText = title || "ULKA TV";
         activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
+// Remote Control Logic
 document.addEventListener('keydown', (event) => {
     const keyCode = event.keyCode || event.which;
-
-    if (keyCode === 8 || keyCode === 461 || keyCode === 27) { 
-        event.preventDefault(); closeEverything(); return; 
+    if (isAppOpen && (keyCode === 8 || keyCode === 461)) { 
+        event.preventDefault(); closeApp(); return; 
     }
-    if (isSettingsOpen) { handleSettingsNavigation(keyCode); return; }
     if (isAppOpen) return;
 
-    // Smart Row Logic:
-    // Middle section has 10 icons (2 rows of 5)
-    // Fav section has 20 icons (2 rows of 10)
-    let currentItem = focusableItems[currentIndex];
-    let isFavSection = currentItem.classList.contains('app-icon');
-    let isMainIcon = currentItem.classList.contains('icon-item');
-    let isLogo = currentItem.classList.contains('logo-box');
-
     switch (keyCode) {
-        case 37: // Left
-            if (currentIndex > 0) currentIndex--;
-            break;
         case 39: // Right
-            if (currentIndex < focusableItems.length - 1) currentIndex++;
-            break;
-        case 38: // Up
-            if (isFavSection) {
-                // If in first row of Fav Apps (indices 11 to 20), go to Main Icons
-                if (currentIndex >= 11 && currentIndex <= 20) {
-                    currentIndex = 6 + Math.floor((currentIndex - 11) / 2); // Map 10 apps to 5 icons
-                } else {
-                    currentIndex -= 10; // Go to row above in Fav section
-                }
-            } else if (isMainIcon) {
-                if (currentIndex >= 6) currentIndex -= 5; // Up one row in main icons
-                else currentIndex = 0; // Go to logo
+            if (currentIndex < focusableItems.length - 1) currentIndex++; break;
+        case 37: // Left
+            if (currentIndex > 0) currentIndex--; break;
+        case 40: // Down
+            if (currentIndex === 0) {
+                currentIndex = 11; // Logo to YouTube
+            } else if (currentIndex >= 1 && currentIndex <= 5) {
+                currentIndex += 5; // Row 1 icons to Row 2
+            } else if (currentIndex >= 6 && currentIndex <= 10) {
+                // Dashboard icons to Fav Apps
+                currentIndex = 11 + (currentIndex - 6) * 2; 
+            } else if (currentIndex >= 11 && currentIndex <= 20) {
+                currentIndex += 10; // Fav Apps Row 1 to Row 2
             }
             break;
-        case 40: // Down
-            if (isLogo) {
-                currentIndex = 1; // Go to first main icon
-            } else if (isMainIcon) {
-                if (currentIndex <= 5) {
-                    currentIndex += 5; // Down to second row of main icons
-                } else {
-                    // Down from Main Icons to Fav Apps (Mapping 5 icons to 10 apps)
-                    currentIndex = 11 + (currentIndex - 6) * 2;
-                }
-            } else if (isFavSection) {
-                if (currentIndex + 10 < focusableItems.length) currentIndex += 10;
+        case 38: // Up
+            if (currentIndex >= 11 && currentIndex <= 20) {
+                // YouTube row nundi neruga ULKA TV Logo ki
+                currentIndex = 0; 
+            } else if (currentIndex >= 21) {
+                currentIndex -= 10; // Fav Row 2 to Row 1
+            } else if (currentIndex >= 6 && currentIndex <= 10) {
+                currentIndex -= 5; // Dashboard Row 2 to Row 1
+            } else if (currentIndex >= 1 && currentIndex <= 5) {
+                currentIndex = 0; // Dashboard Row 1 to Logo
             }
             break;
         case 13: // Enter
-            handleItemSelection();
-            break;
+            handleItemClick(); break;
     }
     updateFocus();
 });
 
-function handleItemSelection() {
+function handleItemClick() {
     const activeItem = focusableItems[currentIndex];
+    if (!activeItem) return;
+    const title = activeItem.getAttribute('data-title');
     const url = activeItem.getAttribute('data-url');
-    if (url === "OPEN_SETTINGS") openSettings();
-    else if (url) openApp(url);
+    if (title === "Settings") {
+        showSettingsMenu();
+    } else if (url) {
+        window.location.href = url;
+    }
 }
 
-function openApp(targetUrl) {
-    const layer = document.getElementById('appLayer');
-    const iframe = document.getElementById('appIframe');
-    iframe.src = targetUrl;
-    layer.style.display = "block";
-    isAppOpen = true;
-}
-
-// --- Settings Overlay Logic ---
-function openSettings() {
-    const overlay = document.getElementById('settingsOverlay');
-    const list = document.getElementById('settingsList');
-    list.innerHTML = "";
+function showSettingsMenu() {
+    const settingsOverlay = document.getElementById('settingsOverlay');
+    const settingsList = document.getElementById('settingsList');
+    if (!settingsOverlay) return;
+    settingsList.innerHTML = ""; 
     settingsMenuOptions.forEach(opt => {
         const div = document.createElement('div');
         div.className = 'setting-option-item';
         div.innerHTML = `<span>${opt.icon}</span> ${opt.title}`;
-        list.appendChild(div);
+        settingsList.appendChild(div);
     });
-    overlay.style.display = "flex";
-    isSettingsOpen = true;
-    settingsIndex = 0;
-    updateSettingsFocus();
+    settingsOverlay.style.display = "flex";
+    isAppOpen = true; 
 }
 
-function handleSettingsNavigation(keyCode) {
-    const items = document.querySelectorAll('.setting-option-item');
-    if (keyCode === 40 && settingsIndex < items.length - 1) settingsIndex++;
-    if (keyCode === 38 && settingsIndex > 0) settingsIndex--;
-    if (keyCode === 13) alert("Selected: " + settingsMenuOptions[settingsIndex].title);
-    updateSettingsFocus();
-}
-
-function updateSettingsFocus() {
-    const items = document.querySelectorAll('.setting-option-item');
-    items.forEach(i => i.style.background = "#333");
-    if (items[settingsIndex]) {
-        items[settingsIndex].style.background = "red";
-        items[settingsIndex].focus();
-    }
-}
-
-function closeEverything() {
-    document.getElementById('appLayer').style.display = "none";
+function closeApp() {
     document.getElementById('settingsOverlay').style.display = "none";
-    document.getElementById('appIframe').src = "";
     isAppOpen = false;
-    isSettingsOpen = false;
     setTimeout(updateFocus, 200);
 }
 
-// --- UI Utilities ---
-function updateDateTime() {
-    const e = document.getElementById("time");
-    const now = new Date();
-    e.textContent = now.toLocaleDateString() + " | " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-}
-setInterval(updateDateTime, 1000);
+// Ads Rotation
+let adIndices = { ad1:0, ad2:0, ad3:0 };
+setInterval(() => {
+    ['ad1','ad2','ad3'].forEach((key,i)=>{
+        adIndices[key]=(adIndices[key]+1)%ads[key].length;
+        const img=document.getElementById(`ad-img-${i+1}`);
+        if(img){img.style.opacity=0; setTimeout(()=>{img.src=ads[key][adIndices[key]]; img.style.opacity=1;},500);}
+    });
+},4000);
 
 function scaleTVUI() {
     const baseW = 1800, baseH = 1000;
     const scale = Math.min(window.innerWidth/baseW, window.innerHeight/baseH);
-    document.getElementById("tv-root").style.transform = `translate(${(window.innerWidth - baseW*scale)/2}px, ${(window.innerHeight - baseH*scale)/2}px) scale(${scale})`;
+    const tvRoot = document.getElementById("tv-root");
+    if (tvRoot) tvRoot.style.transform = `translate(${(window.innerWidth - baseW*scale)/2}px, ${(window.innerHeight - baseH*scale)/2}px) scale(${scale})`;
 }
+
+window.addEventListener("resize", scaleTVUI);
+window.addEventListener("load", () => {
+    renderUI();
+    updateDateTime();
+    setTimeout(setupFocus, 500);
+    scaleTVUI();
+});
+
