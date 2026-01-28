@@ -62,13 +62,13 @@ html, body {
 
 .ads-container {
     display: flex;
-    gap: 20px;
+    gap: 28px;
     width: 100%;
 }
 
 .ad {
     flex: 1;
-    height: 340px;
+    height: 315px;
     border-radius: 15px;
     overflow: hidden;
     background: #222;
@@ -91,8 +91,8 @@ html, body {
 }
 
 .logo-box {
-    width: 450px;
-    height: 240px;
+    width: 440px;
+    height: 213px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -140,7 +140,7 @@ html, body {
 
 .app-info-panel {
     width: 400px;
-    height: 240px;
+    height: 220px;
     background: rgba(217, 217, 217, 0.9);
     color: #111;
     border-radius: 20px;
@@ -237,4 +237,20 @@ html, body {
     display: flex;
     align-items: center;
     gap: 20px;
+}
+/* All Features Text Styling */
+.features-label-container {
+    width: 100%;
+    margin: 10px 0 -40px 0; 
+    padding-left: 5px;
+}
+
+.all-features-text {
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin: 0;
 }
