@@ -206,9 +206,9 @@ const settingsMenuOptions = [
 ];
 
 const ads = {
-    ad1: ["images/ads/ad1_1.jpg", "images/ads/ad4_1.jpg", "images/ads/ad5_1.jpg"],
-    ad2: ["images/ads/ad2_1.jpg", "images/ads/ad6_1.jpg", "images/ads/ad7_1.jpg"],
-    ad3: ["images/ads/ad3_1.jpg", "images/ads/ad8_1.jpg", "images/ads/ad9_1.jpg"]
+    ad1: ["images/ads/ad1_1.jpg", "images/ads/vasantha.jpeg", "images/ads/ad5_1.jpg", "images/ads/week.jpg"],
+    ad2: ["images/ads/ad2_1.jpg", "images/ads/ad6_1.jpg", "images/ads/ad7_1.jpg", "images/ads/bagavatam.webp"],
+    ad3: ["images/ads/mas.webp", "images/ads/ad3_1.jpg", "images/ads/ad8_1.jpg", "images/ads/ad9_1.jpg"]
 };
 
 const centerIconsData = [

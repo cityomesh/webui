@@ -111,10 +111,6 @@ html, body {
     transition: filter 0.3s ease;
 }
 
-.center-content {
-    flex: 1;
-}
-
 .icon-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
