@@ -295,11 +295,14 @@ function setupFocus() {
 
 function updateFocus() {
     if (isAppOpen) return;
+    
     focusableItems.forEach(item => item.classList.remove('focused'));
+    
     const activeItem = focusableItems[currentIndex];
     if (activeItem) {
         activeItem.classList.add('focused');
         activeItem.focus();
+        
         const title = activeItem.getAttribute('data-title');
         const infoTitleElem = document.getElementById('infoTitle');
         if (infoTitleElem) infoTitleElem.innerText = title || "ULKA TV";
@@ -393,11 +396,19 @@ setInterval(() => {
     });
 },4000);
 
+// script.js update
 function scaleTVUI() {
-    const baseW = 1800, baseH = 1000;
-    const scale = Math.min(window.innerWidth/baseW, window.innerHeight/baseH);
+    const baseW = 1920; 
+    const baseH = 1080;
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    
+    const scale = Math.min(screenW / baseW, screenH / baseH);
     const tvRoot = document.getElementById("tv-root");
-    if (tvRoot) tvRoot.style.transform = `translate(${(window.innerWidth - baseW*scale)/2}px, ${(window.innerHeight - baseH*scale)/2}px) scale(${scale})`;
+    
+    if (tvRoot) {
+        tvRoot.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
 }
 
 window.addEventListener("resize", scaleTVUI);

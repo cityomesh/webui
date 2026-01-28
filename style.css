@@ -1,24 +1,30 @@
-/* BODY / TV ROOT */
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+}
+
 html, body {
     width: 100%;
     height: 100%;
     margin: 0;
-    background: black;
+    padding: 0;
+    background: #000;
     overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
 }
 
-/* TV Canvas */
 #tv-root {
-    width: 1800px;
-    height: 1000px;
+    width: 1920px;
+    height: 1080px;
     position: absolute;
-    top: 0;
-    left: 0;
-    transform-origin: top left;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    padding: 50px 60px;
 }
 
-/* App Layer */
 #appLayer {
     display: none; 
     position: fixed; 
@@ -29,45 +35,47 @@ html, body {
     z-index: 9999; 
     background: #000;
 }
+
 #appIframe {
     width: 100%;
     height: 100%;
     border: none;
 }
 
-/* Time + Date + Year */
 #time {
-    position: fixed;
-    top: 12px;
-    right: 25px;
+    position: absolute;
+    top: 20px;
+    right: 60px;
     color: white;
     font-size: 28px;
     font-weight: bold;
     z-index: 100;
 }
 
-/* Main Container */
 .main-container {
-    width: 1800px;
-    margin: 50px auto 0 auto; /* top gap added */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-/* Ads */
 .ads-container {
     display: flex;
-    gap: 12px;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    gap: 20px;
+    width: 100%;
 }
+
 .ad {
     flex: 1;
-    height: 325px;
-    border-radius: 12px;
+    height: 340px;
+    border-radius: 15px;
     overflow: hidden;
     background: #222;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    margin: 0 6px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    border: 1px solid #333;
 }
+
 .ad img {
     width: 100%;
     height: 100%;
@@ -75,93 +83,129 @@ html, body {
     transition: opacity 0.6s ease-in-out;
 }
 
-/* Middle Section */
 .middle-section {
     display: flex;
     gap: 30px;
-    margin-top: 30px;
-    align-items: flex-end; /* icons bottom aligned */
+    align-items: center;
+    height: 300px;
 }
+
 .logo-box {
     width: 450px;
+    height: 240px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 30px;
-    border: 1PX;
-    transition: filter 0.3s ease;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    outline: none; /* Border raakunda chestundi */
 }
+
 .main-logo-img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    transition: filter 0.3s ease;
 }
+
 .center-content {
     flex: 1;
 }
+
 .icon-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 28px;
+    gap: 20px;
 }
+
 .icon-item {
-    width: 110%;
-    height: 109px; /* reduced height */
-    border-radius: 8px;
+    width: 100%;
+    height: 100px;
+    border-radius: 10px;
     overflow: hidden;
-    background: #333;
-    margin-left: -7px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    outline: none;
 }
+
 .icon-item img {
     width: 100%;
     height: 100%;
-}
-.app-info-panel {
-    width: 380px;
-    height: 200px;
-    background: #d9d9d9;
-    color: #333;
-    border-radius: 15px;
-    padding: 25px;
+    object-fit: cover;
 }
 
-/* Favourite Section */
-.fav-title { 
-    margin: 30px 0 12px 0; 
-    font-size: 24px;
+.app-info-panel {
+    width: 400px;
+    height: 240px;
+    background: rgba(217, 217, 217, 0.9);
+    color: #111;
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
+
 .fav-section {
-    margin-top: 20px;
+    width: 100%;
 }
+
+.fav-title { 
+    margin: 0 0 15px 0; 
+    font-size: 26px;
+    font-weight: 600;
+}
+
 #favAppGrid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr); /* line ki 10 apps */
-    gap: 10px;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 15px;
 }
+
 .app-icon {
     width: 100%; 
-    height: 90px;  /* reduced height */
-    border-radius: 10px;
-    background: #222;
+    aspect-ratio: 16/9;
+    border-radius: 12px;
+    background: #1a1a1a;
     overflow: hidden;
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+    outline: none;
 }
+
 .app-icon img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* Focused Items */
+/* --- FOCUS LOGIC --- */
+
+/* Normal Apps/Icons Focus: Red Border + Glow */
 .focused:not(.logo-box) {
-    outline: 4px solid rgb(245, 6, 6) !important;
+    border: 5px solid #ff0000 !important; /* Kevalam red border */
+    transform: scale(1.08);
+    z-index: 10;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.7); /* Red outer glow */
+}
+
+/* ULKA TV Logo Focus: NO BORDER, ONLY RED GLOW */
+.logo-box.focused {
+    border: none !important;
+    outline: none !important;
     transform: scale(1.05);
-    z-index: 100;
 }
+
 .logo-box.focused img {
-    filter: drop-shadow(0 0 13px rgb(250, 40, 3)) drop-shadow(0 0 13px rgb(250, 61, 3));
-    transform: none !important;
+    /* Logo ki chuttu red shadow matrame vasthundi */
+    filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.9)) drop-shadow(0 0 40px rgba(255, 0, 0, 0.4));
 }
-/* Settings modal screen motham cover cheyali */
+
+/* Settings Modal */
 .settings-modal {
     display: none; 
     position: fixed;
@@ -169,29 +213,28 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.95); /* Full dark background */
-    z-index: 99999; /* Server-side background apps kante paina undali */
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 99999;
     justify-content: center;
     align-items: center;
 }
 
 .settings-content {
     background: #1a1a1a;
-    width: 450px;
-    padding: 30px;
+    width: 500px;
+    padding: 40px;
     border: 2px solid #ff0000;
-    border-radius: 15px;
+    border-radius: 20px;
     text-align: center;
-    color: white;
 }
 
 .setting-option-item {
-    background: #333;
-    margin: 10px 0;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 20px;
+    background: #2a2a2a;
+    margin: 15px 0;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 22px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
