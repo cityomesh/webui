@@ -206,7 +206,7 @@ const settingsMenuOptions = [
 ];
 
 const ads = {
-    ad1: ["images/ads/ad1_1.jpg", "images/ads/vasantha.jpeg", "images/ads/ad5_1.jpg", "images/ads/week.jpg"],
+    ad1: ["images/ads/ad1_1.jpg", "images/ads/ad5_1.jpg", "images/ads/week.jpg"],
     ad2: ["images/ads/ad2_1.jpg", "images/ads/ad6_1.jpg", "images/ads/ad7_1.jpg", "images/ads/bagavatam.webp"],
     ad3: ["images/ads/mas.webp", "images/ads/ad3_1.jpg", "images/ads/ad8_1.jpg", "images/ads/ad9_1.jpg"]
 };
@@ -329,7 +329,6 @@ document.addEventListener('keydown', (event) => {
             } else if (currentIndex >= 1 && currentIndex <= 5) {
                 currentIndex += 5; // Row 1 icons to Row 2
             } else if (currentIndex >= 6 && currentIndex <= 10) {
-                // Dashboard icons to Fav Apps
                 currentIndex = 11 + (currentIndex - 6) * 2; 
             } else if (currentIndex >= 11 && currentIndex <= 20) {
                 currentIndex += 10; // Fav Apps Row 1 to Row 2

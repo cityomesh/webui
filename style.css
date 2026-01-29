@@ -62,14 +62,14 @@ html, body {
 
 .ads-container {
     display: flex;
-    gap: 40px; /* Ads madyalo clear gap kosam gap penchanu */
+    gap: 50px; /* Ads madyalo clear gap kosam gap penchanu */
     width: 100%;
     padding: 0 10px; /* Side gaps kosam */
     margin-bottom: 5px;
 }
 .ad {
     flex: 1;
-    height: 290px; /* Height tagginchanu (315px nundi 250px ki) */
+    height: 310px;
     border-radius: 15px;
     overflow: hidden;
     background: #111;
@@ -144,7 +144,7 @@ html, body {
 .app-info-panel {
     width: 400px;
     height: 220px;
-    background: rgba(217, 217, 217, 0.9);
+    background: rgb(244 60 7);
     color: #111;
     border-radius: 20px;
     padding: 30px;
@@ -183,14 +183,13 @@ html, body {
 .app-icon img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
 }
 
 /* --- FOCUS LOGIC --- */
 
 /* Normal Apps/Icons Focus: Red Border + Glow */
 .focused:not(.logo-box) {
-    border: 5px solid #ff0000 !important; /* Kevalam red border */
+    border: 6px solid #ff0000 !important; /* Kevalam red border */
     transform: scale(1.08);
     z-index: 10;
     box-shadow: 0 0 25px rgba(255, 0, 0, 0.7); /* Red outer glow */
