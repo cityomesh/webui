@@ -1,148 +1,460 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ULKATV Dashboard</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="tv-root">
-    <div id="time"></div>
-
-    <div id="appLayer">
-        <iframe id="appIframe" src="" allowfullscreen></iframe>
-    </div>
-
-    <div id="settingsOverlay" class="settings-modal" style="display: none;">
-        <div class="settings-content">
-            <h2>System Settings</h2>
-            <hr>
-            <div id="settingsList" class="settings-list">
-                </div>
-            <p style="color: #aaa; margin-top: 20px;">Press Back to Exit Settings</p>
-        </div>
-    </div>  
-
-    <div class="main-container">
-        <div class="ads-container">
-            <div class="ad"><img src="images/ads/ad1_1.jpg" id="ad-img-1"></div>
-            <div class="ad"><img src="images/ads/ad2_1.jpg" id="ad-img-2"></div>
-            <div class="ad"><img src="images/ads/ad3_1.jpg" id="ad-img-3"></div>
-        </div>
-        <div class="features-label-container">
-            <h3 class="all-features-text">All Features</h3>
-        </div>
-
-        <div class="middle-section">
-            <div class="logo-box" tabindex="0" id="mainLogo" 
-                data-url="http://103.189.178.123:4000/" 
-                data-title="ULKA TV">
-                <img src="images/webpimg/Live_tv_channels.webp" alt="Ulka TV Logo" class="main-logo-img">
-            </div>
-            <div class="center-content">
-                <div class="icon-grid" id="mainIconGrid"></div>
-            </div>
-
-            <div class="app-info-panel" id="appDetailPanel">
-                <div class="info-content">
-                    <h2 id="infoTitle">Welcome</h2>
-                    <p id="infoDesc">Select an item to see details</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="fav-section">
-            <h4 class="fav-title">Favourite Apps</h4>
-            <div class="fav-grid" id="favAppGrid"></div>
-        </div>
-    </div>
-</div>
-
-<script src="script.js"></script>
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ULKATV Dashboard</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULKATV - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+        }
+
+        .login-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            position: relative;
+        }
+
+        .login-box {
+            width: 450px;
+            background-color: rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            padding: 50px 40px;
+            box-shadow: 0 15px 35px rgba(229, 9, 20, 0.2);
+            border: 1px solid #333;
+            z-index: 10;
+        }
+
+        .login-logo {
+            text-align: center;
+        }
+
+        .login-logo img {
+            width: 380px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .input-container {
+            width: 100%;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            cursor: text;
+        }
+
+        .input-container.focused {
+            border-color: #E50914;
+            box-shadow: 0 0 20px #E50914;
+            background-color: rgba(229, 9, 20, 0.1);
+        }
+
+        .input-container input {
+            flex: 1;
+            background: transparent;
+            color: #ffffff;
+            border: none;
+            outline: none;
+            font-size: 20px;
+            width: 100%;
+        }
+
+        .input-container input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+        }
+
+        .password-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0 5px;
+            color: #ffffff;
+            font-size: 24px;
+            opacity: 0.7;
+        }
+
+        .error-message {
+            color: #E50914;
+            font-size: 16px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .signin-btn {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 22px;
+            margin-top: 10px;
+            background-color: #E50914;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #ffffff;
+            outline: none;
+        }
+
+        .signin-btn.focused {
+            background-color: #ff0f1e;
+            border: 3px solid white;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #E50914;
+        }
+
+        .keyboard-container {
+            position: fixed;
+            bottom: -600px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            transition: bottom 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .keyboard-container.visible {
+            bottom: 30px;
+            pointer-events: auto;
+        }
+
+        .custom-keyboard {
+            width: 1000px;
+            padding: 20px;
+            background-color: rgba(20,20,20,0.98);
+            border-radius: 15px;
+            border: 1px solid #E50914;
+            box-shadow: 0 15px 40px rgba(229,9,20,0.3);
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .key {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            color: #ffffff;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 22px;
+            border: 1px solid transparent;
+            transition: all 0.1s;
+            cursor: default;
+            min-width: 60px;
+        }
+
+        .key.focused {
+            background-color: #E50914;
+            border: 3px solid white;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #E50914;
+        }
+
+        .key-space {
+            flex: 4;
+        }
+
+        .key-enter, .key-caps {
+            flex: 1.5;
+        }
+
+        .key-normal {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
-<div id="tv-root">
-    <div id="time"></div>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-box">
+            <div class="login-logo">
+                <img src="images/ads/ulkaTv.png" alt="ULKA TV">
+            </div>
 
-    <div id="appLayer">
-        <iframe id="appIframe" src="" allowfullscreen></iframe>
+            <div style="width: 100%;">
+                <div class="input-container" id="username-container">
+                    <input type="text" id="username" placeholder="Username" value="admin" readonly>
+                </div>
+
+                <div class="input-container" id="password-container">
+                    <input type="password" id="password" placeholder="Password" value="admin@123" readonly>
+                    <button class="password-toggle" id="toggle-password">👁️</button>
+                </div>
+
+                <div id="error-message" class="error-message"></div>
+                <button class="signin-btn" id="signin-btn">Sign In</button>
+            </div>
+        </div>
     </div>
 
-    <div id="settingsOverlay" class="settings-modal" style="display: none;">
-        <div class="settings-content">
-            <h2>System Settings</h2>
-            <hr>
-            <div id="settingsList" class="settings-list">
-                </div>
-            <p style="color: #aaa; margin-top: 20px;">Press Back to Exit Settings</p>
-        </div>
-    </div>  
-
-    <div class="main-container">
-        <div class="ads-container">
-            <div class="ad"><img src="images/ads/ad1_1.jpg" id="ad-img-1"></div>
-            <div class="ad"><img src="images/ads/ad2_1.jpg" id="ad-img-2"></div>
-            <div class="ad"><img src="images/ads/ad3_1.jpg" id="ad-img-3"></div>
-        </div>
-        <div class="features-label-container">
-            <h3 class="all-features-text">All Features</h3>
-        </div>
-
-        <!-- <div class="middle-section">
-            <div class="logo-box" tabindex="0" id="mainLogo"
-                data-url="https://app.ulka.tv/"
-                data-title="ULKA TV">
-                <img src="images/webpimg/Live_tv_channels.webp" alt="Ulka TV Logo" class="main-logo-img">
-            </div>
-            <div class="center-content">
-                <div class="icon-grid" id="mainIconGrid"></div>
-            </div>
-
-            <div class="app-info-panel" id="appDetailPanel">
-                <div class="info-content">
-                    <h2 id="infoTitle">Welcome</h2>
-                    <p id="infoDesc">Select an item to see details</p>
-                </div>
-            </div>
-        </div> -->
-
-        <div class="middle-section">
-            <div class="logo-box" tabindex="0" id="mainLogo"
-                data-url="/usr/mnt_app/ulkatv/"
-                data-title="ULKA TV">
-                <img src="images/webpimg/Live_tv_channels.webp" alt="Ulka TV Logo" class="main-logo-img">
-            </div>
-            <div class="center-content">
-                <div class="icon-grid" id="mainIconGrid"></div>
-            </div>
-
-            <div class="app-info-panel" id="appDetailPanel">
-                <div class="info-content">
-                    <h2 id="infoTitle">Welcome</h2>
-                    <p id="infoDesc">Select an item to see details</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="fav-section">
-            <h4 class="fav-title">Favourite Apps</h4>
-            <div class="fav-grid" id="favAppGrid"></div>
-        </div>
+    <!-- Custom Keyboard -->
+    <div class="keyboard-container" id="keyboard-container">
+        <div class="custom-keyboard" id="keyboard"></div>
     </div>
-</div>
 
-<script src="script.js"></script>
+    <script>
+        // Login state variables
+        let username = 'admin';
+        let password = 'admin@123';
+        let showPassword = false;
+        let isCaps = false;
+        let isSymbol = false;
+        let focusKey = 'username';
+        let kbPos = { row: 0, col: 0 };
+        let isKeyboardVisible = false;
+        let keyboardTarget = '';
+        
+        const VALID_USERNAME = 'admin';
+        const VALID_PASSWORD = 'admin@123';
+
+        const KEYBOARD_LAYOUT = [
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+            ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+            ['CAPS', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BACK'],
+            ['@#$', '.', 'SPACE', 'ENTER'],
+        ];
+
+        const SYMBOL_LAYOUT = [
+            ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
+            ['-', '_', '+', '=', '{', '}', '[', ']'],
+            [';', ':', '"', "'", '<', '>', '?'],
+            ['ABC', 'BACK'],
+            ['SPACE', 'ENTER']
+        ];
+
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const usernameContainer = document.getElementById('username-container');
+        const passwordContainer = document.getElementById('password-container');
+        const signinBtn = document.getElementById('signin-btn');
+        const errorMessage = document.getElementById('error-message');
+        const keyboardContainer = document.getElementById('keyboard-container');
+        const keyboard = document.getElementById('keyboard');
+        const togglePassword = document.getElementById('toggle-password');
+
+        // Initialize login
+        function initLogin() {
+            usernameInput.value = username;
+            passwordInput.value = password;
+            renderKeyboard();
+            addEventListeners();
+            clearError();
+        }
+
+        function addEventListeners() {
+            usernameContainer.addEventListener('click', () => {
+                focusKey = 'username';
+                keyboardTarget = 'username';
+                isKeyboardVisible = true;
+                updateFocus();
+                renderKeyboard();
+            });
+
+            passwordContainer.addEventListener('click', () => {
+                focusKey = 'password';
+                keyboardTarget = 'password';
+                isKeyboardVisible = true;
+                updateFocus();
+                renderKeyboard();
+            });
+
+            togglePassword.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showPassword = !showPassword;
+                passwordInput.type = showPassword ? 'text' : 'password';
+                togglePassword.textContent = showPassword ? '👁️‍🗨️' : '👁️';
+            });
+
+            signinBtn.addEventListener('click', handleLogin);
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        function clearError() {
+            errorMessage.textContent = '';
+        }
+
+        function handleKeyDown(e) {
+            e.preventDefault();
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    if (focusKey === 'password') focusKey = 'username';
+                    else if (focusKey === 'login_btn') focusKey = 'password';
+                    else if (focusKey === 'keyboard') {
+                        if (kbPos.row > 0) kbPos.row--;
+                        else { isKeyboardVisible = false; focusKey = 'login_btn'; }
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (focusKey === 'username') focusKey = 'password';
+                    else if (focusKey === 'password') focusKey = 'login_btn';
+                    else if (focusKey === 'login_btn') {
+                        focusKey = 'keyboard';
+                        isKeyboardVisible = true;
+                        kbPos = { row: 0, col: 4 };
+                    } else if (focusKey === 'keyboard') {
+                        const layout = isSymbol ? SYMBOL_LAYOUT : KEYBOARD_LAYOUT;
+                        if (kbPos.row < layout.length - 1) {
+                            kbPos.row++;
+                            kbPos.col = Math.min(kbPos.col, layout[kbPos.row].length - 1);
+                        }
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (focusKey === 'keyboard') {
+                        const layout = isSymbol ? SYMBOL_LAYOUT : KEYBOARD_LAYOUT;
+                        if (kbPos.col > 0) kbPos.col--;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (focusKey === 'keyboard') {
+                        const layout = isSymbol ? SYMBOL_LAYOUT : KEYBOARD_LAYOUT;
+                        if (kbPos.col < layout[kbPos.row].length - 1) kbPos.col++;
+                    }
+                    break;
+                case 'Enter':
+                    handleRemoteEnter();
+                    break;
+            }
+            updateFocus();
+            renderKeyboard();
+        }
+
+        function handleRemoteEnter() {
+            if (focusKey === 'username' || focusKey === 'password') {
+                keyboardTarget = focusKey;
+                isKeyboardVisible = true;
+                focusKey = 'keyboard';
+                updateFocus();
+                renderKeyboard();
+                return;
+            }
+            if (focusKey === 'login_btn') {
+                handleLogin();
+                return;
+            }
+            if (focusKey === 'keyboard') {
+                const layout = isSymbol ? SYMBOL_LAYOUT : KEYBOARD_LAYOUT;
+                const key = layout[kbPos.row][kbPos.col];
+                if (key === 'CAPS') isCaps = !isCaps;
+                else if (key === '@#$') { isSymbol = true; kbPos = { row: 0, col: 0 }; }
+                else if (key === 'ABC') { isSymbol = false; kbPos = { row: 0, col: 0 }; }
+                else if (key === 'BACK') handleKeyboardKeyPress('backspace');
+                else if (key === 'ENTER') {
+                    if (keyboardTarget === 'username' || keyboardTarget === 'password') {
+                        isKeyboardVisible = false;
+                        focusKey = keyboardTarget === 'username' ? 'password' : 'login_btn';
+                        keyboardTarget = '';
+                    }
+                } else if (key === 'SPACE') handleKeyboardKeyPress(' ');
+                else {
+                    const char = isCaps && key.length === 1 ? key.toUpperCase() : key.toLowerCase();
+                    handleKeyboardKeyPress(char);
+                }
+                renderKeyboard();
+            }
+        }
+
+        function handleKeyboardKeyPress(key) {
+            if (key === 'backspace') {
+                if (keyboardTarget === 'username') username = username.slice(0, -1);
+                else if (keyboardTarget === 'password') password = password.slice(0, -1);
+            } else {
+                if (keyboardTarget === 'username') username += key;
+                else if (keyboardTarget === 'password') password += key;
+            }
+            updateInputFields();
+            clearError();
+        }
+
+        function updateInputFields() {
+            usernameInput.value = username;
+            passwordInput.value = password;
+        }
+
+        function handleLogin() {
+            isKeyboardVisible = false;
+            keyboardTarget = '';
+            
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                // Store username in sessionStorage for dashboard
+                sessionStorage.setItem('username', username);
+                // Redirect to dashboard page
+                window.location.href = 'dashboard.html';
+            } else {
+                errorMessage.textContent = '⚠️ Invalid username or password';
+            }
+            updateFocus();
+            renderKeyboard();
+        }
+
+        function updateFocus() {
+            usernameContainer.classList.remove('focused');
+            passwordContainer.classList.remove('focused');
+            signinBtn.classList.remove('focused');
+
+            if (focusKey === 'username') usernameContainer.classList.add('focused');
+            else if (focusKey === 'password') passwordContainer.classList.add('focused');
+            else if (focusKey === 'login_btn') signinBtn.classList.add('focused');
+
+            if (isKeyboardVisible) keyboardContainer.classList.add('visible');
+            else keyboardContainer.classList.remove('visible');
+        }
+
+        function renderKeyboard() {
+            const layout = isSymbol ? SYMBOL_LAYOUT : KEYBOARD_LAYOUT;
+            let html = '';
+            layout.forEach((row, rIdx) => {
+                html += '<div class="keyboard-row">';
+                row.forEach((key, cIdx) => {
+                    const isFocused = focusKey === 'keyboard' && rIdx === kbPos.row && cIdx === kbPos.col;
+                    let keyClass = 'key';
+                    if (key === 'SPACE') keyClass += ' key-space';
+                    else if (key === 'ENTER' || key === 'CAPS') keyClass += ' key-enter';
+                    else keyClass += ' key-normal';
+                    if (isFocused) keyClass += ' focused';
+                    let displayKey = key;
+                    if (key === 'BACK') displayKey = '⌫';
+                    else if (key.length === 1 && !isSymbol) displayKey = isCaps ? key.toUpperCase() : key.toLowerCase();
+                    html += `<div class="${keyClass}">${displayKey}</div>`;
+                });
+                html += '</div>';
+            });
+            keyboard.innerHTML = html;
+        }
+
+        // Initialize login
+        initLogin();
+    </script>
 </body>
 </html>
