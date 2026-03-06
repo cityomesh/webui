@@ -14,11 +14,11 @@ const ads = {
 
 const centerIconsData = [
     { title: "Radio", img: "images/webpimg/Radio-Channels.webp", url: "" },
-    { title: "LiveTV", img: "images/webpimg/Video-on-demand.webp", url: "http://103.189.178.123:4000/" },
+    { title: "LiveTV", img: "images/webpimg/Video-on-demand.webp", url: "http://103.189.178.123:9000/" },
     { title: "Settings", img: "images/webpimg/my-favourite-Apps.webp", url: "" },
     { title: "Account", img: "images/webpimg/my_Account_information.webp", url: "" },
     { title: "Favorite", img: "images/webpimg/Setup-Settings.webp", url: "" },
-    { title: "Network", img: "images/webpimg/partners-local-channels.webp", url: "http://103.189.178.123/" },
+    { title: "Network", img: "images/webpimg/partners-local-channels.webp", url: "http://103.189.178.123:4000/" },
     { title: "Payments", img: "images/webpimg/News-Clips.webp", url: "" },
     { title: "Favorite", img: "images/webpimg/kids-corner.webp", url: "" },
     { title: "Network", img: "images/webpimg/ShoppingCard.webp", url: "" },
