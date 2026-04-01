@@ -1,4 +1,3 @@
-/* ==================== DASHBOARD STYLES ==================== */
 * {
     margin: 0;
     padding: 0;
@@ -8,7 +7,7 @@
 body {
     overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #000;
+    background-color: #221f1f;
 }
 
 #tv-root {
@@ -20,7 +19,7 @@ body {
     transform: translate(-50%, -50%);
     transform-origin: center;
     padding: 50px 60px;
-    background: #000;
+    background: #221f1f;
 }
 
 #appLayer {
@@ -38,19 +37,6 @@ body {
     width: 100%;
     height: 100%;
     border: none;
-}
-
-#time {
-    position: absolute;
-    top: 30px;
-    right: 60px;
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    z-index: 100;
-    background: rgba(0,0,0,0.5);
-    padding: 5px 15px;
-    border-radius: 30px;
 }
 
 .main-container {
@@ -87,11 +73,46 @@ body {
     transition: opacity 0.6s ease-in-out;
 }
 
+.header-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#welcome-user {
+    color: #E50914;
+    font-size: 23px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.5);
+    padding: 8px 25px;
+    border-radius: 30px;
+    border: 1px solid #E50914;
+}
+
+#username-display-header {
+    color: #E50914;
+}
+
+#datetime-display-header {
+    color: white;
+    font-size: 23px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.5);
+    padding: 8px 25px;
+    border-radius: 30px;
+    font-family: monospace;
+}
+
 .middle-section {
     display: flex;
     gap: 30px;
     align-items: center;
     height: 300px;
+    margin-top: 10px;
 }
 
 .logo-box {
@@ -131,6 +152,7 @@ body {
     align-items: center;
     justify-content: center;
     outline: none;
+    margin-left: -14px;
 }
 
 .icon-item img {
@@ -142,7 +164,7 @@ body {
 .app-info-panel {
     width: 400px;
     height: 220px;
-    background: rgb(244, 60, 7);
+    background: rgb(245 6 17);
     color: white;
     border-radius: 20px;
     padding: 30px;
@@ -167,7 +189,7 @@ body {
 }
 
 .fav-title { 
-    margin: 0 0 45px 0; 
+    margin: 0 0 30px 0; 
     font-size: 28px;
     font-weight: 600;
     color: white;
@@ -184,10 +206,8 @@ body {
 .app-icon {
     width: 100%; 
     aspect-ratio: 16/9;
-    border-radius: 12px;
-    background: #1a1a1a;
+    border-radius: 15px;
     overflow: hidden;
-    border: 1px solid #333;
     outline: none;
 }
 
@@ -198,10 +218,10 @@ body {
 }
 
 .focused:not(.logo-box) {
-    border: 6px solid #ff0000 !important;
+    border: 4px solid #f70303 !important;
     transform: scale(1.08);
     z-index: 10;
-    box-shadow: 0 0 25px rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 25px rgba(250, 248, 248, 0.7);
 }
 
 .logo-box.focused {
@@ -258,27 +278,4 @@ body {
     gap: 20px;
     color: white;
     border: 1px solid transparent;
-}
-
-.all-features-text {
-    color: #ffffff;
-    font-size: 28px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 30px;
-}
-
-#username-display {
-    position: absolute;
-    top: 30px;
-    left: 60px;
-    color: #E50914;
-    font-size: 24px;
-    font-weight: bold;
-    z-index: 100;
-    background: rgba(0,0,0,0.5);
-    padding: 5px 20px;
-    border-radius: 30px;
-    border: 1px solid #E50914;
 }

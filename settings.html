@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TV Box Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* TV Container */
+        .tv-container {
+            width: 100%;
+            height: 100%;
+            background: #0a0e1a;
+            position: relative;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Settings Header */
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #1e2438 0%, #131724 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .settings-header h1 {
+            color: #fff;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-button {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover, .back-button.focused {
+            background: #ff6b35;
+            transform: scale(1.05);
+        }
+
+        /* Settings Categories */
+        .settings-categories {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .category-card {
+            background: rgba(30, 36, 56, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .category-card.focused {
+            border-color: #ff6b35;
+            transform: scale(1.02);
+            background: rgba(255, 107, 53, 0.1);
+            box-shadow: 0 10px 30px rgba(255,107,53,0.3);
+        }
+
+        .category-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .category-desc {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            background: rgba(30, 36, 56, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .settings-panel.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .setting-item {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .setting-item.focused {
+            background: rgba(255,107,53,0.2);
+            border-radius: 12px;
+            transform: translateX(10px);
+        }
+
+        .setting-label {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .setting-value {
+            font-size: 16px;
+            color: #ff6b35;
+        }
+
+        .setting-description {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Network Status */
+        .network-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: #ff4444;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Volume Slider */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .volume-slider {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .volume-fill {
+            height: 100%;
+            background: #ff6b35;
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+
+        .volume-value {
+            min-width: 60px;
+            text-align: right;
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        /* Brightness Slider */
+        .brightness-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brightness-slider {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .brightness-fill {
+            height: 100%;
+            background: #ff6b35;
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+
+        .brightness-value {
+            min-width: 60px;
+            text-align: right;
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        /* System Info */
+        .system-info {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .info-label {
+            color: #aaa;
+        }
+
+        .info-value {
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .action-button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .action-button:hover, .action-button.focused {
+            background: #ff5722;
+            transform: scale(1.02);
+        }
+
+        /* Wi-Fi Networks List */
+        .wifi-list {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .wifi-list.active {
+            display: block;
+        }
+
+        .wifi-network {
+            padding: 15px;
+            margin: 5px 0;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wifi-network.focused {
+            background: rgba(255,107,53,0.3);
+            transform: translateX(10px);
+        }
+
+        .wifi-name {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .wifi-signal {
+            color: #ff6b35;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e2438;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff6b35;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tv-container">
+        <div class="settings-header">
+            <h1>
+                <span>⚙️</span>
+                TV Box Settings
+            </h1>
+            <button class="back-button" id="backButton">← Back to Home</button>
+        </div>
+
+        <!-- Settings Categories -->
+        <div class="settings-categories" id="settingsCategories">
+            <div class="category-card" data-category="network">
+                <div class="category-icon">🌐</div>
+                <div class="category-title">Network & Internet</div>
+                <div class="category-desc">Wi-Fi, Ethernet, Proxy settings</div>
+            </div>
+            <div class="category-card" data-category="display">
+                <div class="category-icon">🖥️</div>
+                <div class="category-title">Display & Sound</div>
+                <div class="category-desc">Resolution, Brightness, Volume</div>
+            </div>
+            <div class="category-card" data-category="account">
+                <div class="category-icon">👤</div>
+                <div class="category-title">Account & Security</div>
+                <div class="category-desc">User profile, Privacy, Parental controls</div>
+            </div>
+            <div class="category-card" data-category="system">
+                <div class="category-icon">ℹ️</div>
+                <div class="category-title">System & Storage</div>
+                <div class="category-desc">Storage, Date & Time, Language</div>
+            </div>
+            <div class="category-card" data-category="updates">
+                <div class="category-icon">🔄</div>
+                <div class="category-title">Updates & Reset</div>
+                <div class="category-desc">System updates, Factory reset</div>
+            </div>
+        </div>
+
+        <!-- Network Settings Panel -->
+        <div class="settings-panel" id="networkPanel">
+            <h2 style="color:#fff; margin-bottom:20px;">Network Settings</h2>
+            <div class="setting-item" data-setting="wifi" data-has-submenu="true">
+                <div>
+                    <div class="setting-label">Wi-Fi</div>
+                    <div class="setting-description">Connect to wireless networks</div>
+                </div>
+                <div class="network-status">
+                    <div class="status-dot" id="wifiStatusDot"></div>
+                    <div class="setting-value" id="wifiStatusText">Connected: Home_WiFi</div>
+                </div>
+            </div>
+            <div id="wifiNetworksList" class="wifi-list"></div>
+            
+            <div class="setting-item" data-setting="ethernet">
+                <div>
+                    <div class="setting-label">Ethernet</div>
+                    <div class="setting-description">Wired network connection</div>
+                </div>
+                <div class="network-status">
+                    <div class="status-dot" id="ethernetStatusDot"></div>
+                    <div class="setting-value" id="ethernetStatusText">Connected</div>
+                </div>
+            </div>
+            <div class="setting-item" data-setting="ip">
+                <div>
+                    <div class="setting-label">IP Address</div>
+                    <div class="setting-description">Current network address</div>
+                </div>
+                <div class="setting-value" id="ipAddress">192.168.1.100</div>
+            </div>
+            <div class="setting-item" data-setting="proxy">
+                <div>
+                    <div class="setting-label">Proxy Settings</div>
+                    <div class="setting-description">Configure proxy server</div>
+                </div>
+                <div class="setting-value">None</div>
+            </div>
+            <button class="action-button" data-action="test-network">Test Network Speed</button>
+        </div>
+
+        <!-- Display Settings Panel -->
+        <div class="settings-panel" id="displayPanel">
+            <h2 style="color:#fff; margin-bottom:20px;">Display & Sound</h2>
+            <div class="setting-item" data-setting="resolution">
+                <div>
+                    <div class="setting-label">Screen Resolution</div>
+                    <div class="setting-description">Display output resolution</div>
+                </div>
+                <div class="setting-value" id="resolutionValue">1920x1080 (1080p)</div>
+            </div>
+            <div class="setting-item" data-setting="brightness">
+                <div>
+                    <div class="setting-label">Brightness</div>
+                    <div class="setting-description">Adjust screen brightness</div>
+                </div>
+                <div class="brightness-control">
+                    <div class="brightness-slider" id="brightnessSlider">
+                        <div class="brightness-fill" id="brightnessFill"></div>
+                    </div>
+                    <div class="brightness-value" id="brightnessValue">85%</div>
+                </div>
+            </div>
+            <div class="setting-item" data-setting="volume">
+                <div>
+                    <div class="setting-label">Volume</div>
+                    <div class="setting-description">Audio output level</div>
+                </div>
+                <div class="volume-control">
+                    <div class="volume-slider" id="volumeSlider">
+                        <div class="volume-fill" id="volumeFill"></div>
+                    </div>
+                    <div class="volume-value" id="volumeValue">70%</div>
+                </div>
+            </div>
+            <div class="setting-item" data-setting="audio">
+                <div>
+                    <div class="setting-label">Audio Output</div>
+                    <div class="setting-description">Select audio device</div>
+                </div>
+                <div class="setting-value" id="audioOutput">HDMI ARC</div>
+            </div>
+        </div>
+
+        <!-- Account Settings Panel -->
+        <div class="settings-panel" id="accountPanel">
+            <h2 style="color:#fff; margin-bottom:20px;">Account Settings</h2>
+            <div class="setting-item" data-setting="profile">
+                <div>
+                    <div class="setting-label">User Profile</div>
+                    <div class="setting-description">Manage user accounts</div>
+                </div>
+                <div class="setting-value">Guest User</div>
+            </div>
+            <div class="setting-item" data-setting="parental">
+                <div>
+                    <div class="setting-label">Parental Controls</div>
+                    <div class="setting-description">Restrict content by rating</div>
+                </div>
+                <div class="setting-value">Off</div>
+            </div>
+            <div class="setting-item" data-setting="privacy">
+                <div>
+                    <div class="setting-label">Privacy Settings</div>
+                    <div class="setting-description">App permissions, data collection</div>
+                </div>
+                <div class="setting-value">Configure</div>
+            </div>
+            <div class="setting-item" data-setting="google">
+                <div>
+                    <div class="setting-label">Google Account</div>
+                    <div class="setting-description">Sync and backup</div>
+                </div>
+                <div class="setting-value">Not signed in</div>
+            </div>
+            <button class="action-button" data-action="sign-in">Sign In</button>
+        </div>
+
+        <!-- System Settings Panel -->
+        <div class="settings-panel" id="systemPanel">
+            <h2 style="color:#fff; margin-bottom:20px;">System Information</h2>
+            <div class="system-info">
+                <div class="info-row">
+                    <span class="info-label">Device Model:</span>
+                    <span class="info-value">Smart TV Box Pro</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Android Version:</span>
+                    <span class="info-value">Android TV 11.0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Storage Available:</span>
+                    <span class="info-value">8.2 GB / 16 GB</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">RAM:</span>
+                    <span class="info-value">2 GB</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date & Time:</span>
+                    <span class="info-value" id="systemTime">--:--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Language:</span>
+                    <span class="info-value">English (US)</span>
+                </div>
+            </div>
+            <div class="setting-item" data-setting="keyboard">
+                <div>
+                    <div class="setting-label">Keyboard Settings</div>
+                    <div class="setting-description">Input method and language</div>
+                </div>
+                <div class="setting-value">Gboard</div>
+            </div>
+            <div class="setting-item" data-setting="accessibility">
+                <div>
+                    <div class="setting-label">Accessibility</div>
+                    <div class="setting-description">TalkBack, caption, etc.</div>
+                </div>
+                <div class="setting-value">Configure</div>
+            </div>
+        </div>
+
+        <!-- Updates Panel -->
+        <div class="settings-panel" id="updatesPanel">
+            <h2 style="color:#fff; margin-bottom:20px;">System Updates</h2>
+            <div class="system-info">
+                <div class="info-row">
+                    <span class="info-label">Current Version:</span>
+                    <span class="info-value">v2.5.1</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Last Update:</span>
+                    <span class="info-value">December 15, 2024</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Security Patch:</span>
+                    <span class="info-value">December 2024</span>
+                </div>
+            </div>
+            <button class="action-button" data-action="check-updates">Check for Updates</button>
+            <div class="setting-item" data-setting="reset">
+                <div>
+                    <div class="setting-label">Factory Reset</div>
+                    <div class="setting-description">Reset all settings to default</div>
+                </div>
+                <div class="setting-value" style="color:#ff4444;">⚠️ Reset Device</div>
+            </div>
+            <div class="setting-item" data-setting="restart">
+                <div>
+                    <div class="setting-label">Restart Device</div>
+                    <div class="setting-description">Reboot TV box</div>
+                </div>
+                <div class="setting-value">Restart Now</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFocusIndex = 0;
+        let focusableItems = [];
+        let activeCategory = null;
+        let isWifiMenuOpen = false;
+        let wifiNetworks = [];
+        let currentVolume = 70;
+        let currentBrightness = 85;
+        
+        // Sample Wi-Fi networks
+        const availableNetworks = [
+            { name: "Home_WiFi", signal: "Excellent", secured: true, connected: true },
+            { name: "Guest_Network", signal: "Good", secured: true, connected: false },
+            { name: "Office_WiFi", signal: "Fair", secured: true, connected: false },
+            { name: "Public_WiFi", signal: "Weak", secured: false, connected: false }
+        ];
+
+        // Update focusable items
+        function updateFocusableItems() {
+            if (isWifiMenuOpen) {
+                const wifiItems = document.querySelectorAll('.wifi-network');
+                const backButton = document.querySelector('#backButton');
+                focusableItems = Array.from(wifiItems);
+                if (backButton) focusableItems.push(backButton);
+            } else if (activeCategory === null) {
+                const categories = document.querySelectorAll('.category-card');
+                const backButton = document.querySelector('#backButton');
+                focusableItems = Array.from(categories);
+                if (backButton) focusableItems.push(backButton);
+            } else {
+                const settingItems = document.querySelectorAll(`#${activeCategory}Panel .setting-item`);
+                const actionButtons = document.querySelectorAll(`#${activeCategory}Panel .action-button`);
+                const backButton = document.querySelector('#backButton');
+                focusableItems = Array.from(settingItems);
+                focusableItems.push(...Array.from(actionButtons));
+                if (backButton) focusableItems.push(backButton);
+            }
+            
+            updateFocus();
+        }
+
+        function updateFocus() {
+            focusableItems.forEach((item, idx) => {
+                if (idx === currentFocusIndex) {
+                    item.classList.add('focused');
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    item.classList.remove('focused');
+                }
+            });
+        }
+
+        // Handle remote control
+        document.addEventListener('keydown', (event) => {
+            const keyCode = event.keyCode || event.which;
+            
+            // Handle volume up/down with arrow keys when not focused on slider
+            if (activeCategory === 'display' && !isWifiMenuOpen) {
+                if (keyCode === 38) { // Up arrow for volume up
+                    event.preventDefault();
+                    adjustVolume(5);
+                    return;
+                } else if (keyCode === 40) { // Down arrow for volume down
+                    event.preventDefault();
+                    adjustVolume(-5);
+                    return;
+                }
+            }
+            
+            switch(keyCode) {
+                case 39: // Right
+                    if (currentFocusIndex < focusableItems.length - 1) {
+                        currentFocusIndex++;
+                        updateFocus();
+                    }
+                    break;
+                case 37: // Left
+                    if (currentFocusIndex > 0) {
+                        currentFocusIndex--;
+                        updateFocus();
+                    }
+                    break;
+                case 40: // Down
+                    if (currentFocusIndex < focusableItems.length - 1) {
+                        currentFocusIndex++;
+                        updateFocus();
+                    }
+                    break;
+                case 38: // Up
+                    if (currentFocusIndex > 0) {
+                        currentFocusIndex--;
+                        updateFocus();
+                    }
+                    break;
+                case 13: // Enter
+                    handleEnterPress();
+                    break;
+                case 8: // Backspace
+                case 461: // Back button on TV remote
+                    event.preventDefault();
+                    if (isWifiMenuOpen) {
+                        closeWifiMenu();
+                    } else if (activeCategory !== null) {
+                        closePanel();
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                    break;
+            }
+        });
+
+        function handleEnterPress() {
+            const focusedItem = focusableItems[currentFocusIndex];
+            if (!focusedItem) return;
+            
+            // Handle back button
+            if (focusedItem.id === 'backButton') {
+                if (isWifiMenuOpen) {
+                    closeWifiMenu();
+                } else if (activeCategory !== null) {
+                    closePanel();
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+                return;
+            }
+            
+            // Handle Wi-Fi network selection
+            if (isWifiMenuOpen && focusedItem.classList.contains('wifi-network')) {
+                const networkName = focusedItem.querySelector('.wifi-name')?.textContent;
+                if (networkName) {
+                    connectToWiFi(networkName);
+                }
+                return;
+            }
+            
+            // Handle category selection
+            if (activeCategory === null && !isWifiMenuOpen) {
+                const category = focusedItem.getAttribute('data-category');
+                if (category) {
+                    openPanel(category);
+                }
+                return;
+            }
+            
+            // Handle setting items
+            const setting = focusedItem.getAttribute('data-setting');
+            const action = focusedItem.getAttribute('data-action');
+            
+            if (setting === 'wifi') {
+                openWifiMenu();
+            } else if (setting === 'resolution') {
+                cycleResolution();
+            } else if (setting === 'audio') {
+                cycleAudioOutput();
+            } else if (action === 'test-network') {
+                testNetworkSpeed();
+            } else if (action === 'sign-in') {
+                showToast('Opening sign in page...');
+            } else if (action === 'check-updates') {
+                checkForUpdates();
+            } else if (setting === 'reset') {
+                confirmReset();
+            } else if (setting === 'restart') {
+                confirmRestart();
+            } else if (setting && !isWifiMenuOpen) {
+                showToast(`Opening ${setting} settings...`);
+            }
+        }
+
+        // Volume control
+        function adjustVolume(delta) {
+            currentVolume = Math.min(100, Math.max(0, currentVolume + delta));
+            const volumeFill = document.getElementById('volumeFill');
+            const volumeValue = document.getElementById('volumeValue');
+            
+            if (volumeFill) volumeFill.style.width = `${currentVolume}%`;
+            if (volumeValue) volumeValue.textContent = `${currentVolume}%`;
+            
+            showToast(`Volume: ${currentVolume}%`);
+            
+            // Simulate volume change
+            const audio = new Audio();
+            audio.volume = currentVolume / 100;
+        }
+
+        // Brightness control
+        function adjustBrightness(value) {
+            currentBrightness = value;
+            const brightnessFill = document.getElementById('brightnessFill');
+            const brightnessValue = document.getElementById('brightnessValue');
+            
+            if (brightnessFill) brightnessFill.style.width = `${currentBrightness}%`;
+            if (brightnessValue) brightnessValue.textContent = `${currentBrightness}%`;
+            
+            // Apply brightness to body
+            document.body.style.filter = `brightness(${currentBrightness}%)`;
+            showToast(`Brightness: ${currentBrightness}%`);
+        }
+
+        // Wi-Fi functions
+        function openWifiMenu() {
+            isWifiMenuOpen = true;
+            const wifiList = document.getElementById('wifiNetworksList');
+            if (wifiList) {
+                wifiList.classList.add('active');
+                wifiList.innerHTML = '';
+                availableNetworks.forEach(network => {
+                    const div = document.createElement('div');
+                    div.className = 'wifi-network';
+                    div.innerHTML = `
+                        <div class="wifi-name">${network.name}</div>
+                        <div class="wifi-signal">${network.signal} ${network.secured ? '🔒' : '🌐'}</div>
+                    `;
+                    wifiList.appendChild(div);
+                });
+            }
+            currentFocusIndex = 0;
+            updateFocusableItems();
+        }
+
+        function closeWifiMenu() {
+            isWifiMenuOpen = false;
+            const wifiList = document.getElementById('wifiNetworksList');
+            if (wifiList) {
+                wifiList.classList.remove('active');
+            }
+            updateFocusableItems();
+        }
+
+        function connectToWiFi(networkName) {
+            showToast(`Connecting to ${networkName}...`);
+            setTimeout(() => {
+                const wifiStatusText = document.getElementById('wifiStatusText');
+                if (wifiStatusText) {
+                    wifiStatusText.textContent = `Connected: ${networkName}`;
+                }
+                showToast(`Connected to ${networkName}`);
+                closeWifiMenu();
+            }, 1500);
+        }
+
+        // Network functions
+        function testNetworkSpeed() {
+            showToast('Testing network speed...');
+            setTimeout(() => {
+                const speeds = ['25 Mbps', '50 Mbps', '75 Mbps', '100 Mbps'];
+                const randomSpeed = speeds[Math.floor(Math.random() * speeds.length)];
+                showToast(`Download: ${randomSpeed} | Upload: ${Math.floor(Math.random() * 50) + 10} Mbps`);
+            }, 2000);
+        }
+
+        // Display functions
+        function cycleResolution() {
+            const resolutions = ['1920x1080 (1080p)', '1280x720 (720p)', '3840x2160 (4K)'];
+            const resolutionElem = document.getElementById('resolutionValue');
+            if (resolutionElem) {
+                let currentIndex = resolutions.indexOf(resolutionElem.textContent);
+                currentIndex = (currentIndex + 1) % resolutions.length;
+                resolutionElem.textContent = resolutions[currentIndex];
+                showToast(`Resolution changed to ${resolutions[currentIndex]}`);
+            }
+        }
+
+        function cycleAudioOutput() {
+            const outputs = ['HDMI ARC', 'Optical', 'Bluetooth Speaker', 'TV Speakers'];
+            const audioElem = document.getElementById('audioOutput');
+            if (audioElem) {
+                let currentIndex = outputs.indexOf(audioElem.textContent);
+                currentIndex = (currentIndex + 1) % outputs.length;
+                audioElem.textContent = outputs[currentIndex];
+                showToast(`Audio output: ${outputs[currentIndex]}`);
+            }
+        }
+
+        // Update functions
+        function checkForUpdates() {
+            showToast('Checking for updates...');
+            setTimeout(() => {
+                showToast('System is up to date (v2.5.1)');
+            }, 2000);
+        }
+
+        // Reset functions
+        function confirmReset() {
+            if (confirm('⚠️ WARNING: This will erase all data and reset your device to factory settings. Continue?')) {
+                showToast('Resetting device...');
+                setTimeout(() => {
+                    showToast('Device reset complete');
+                }, 3000);
+            }
+        }
+
+        function confirmRestart() {
+            if (confirm('Restart your TV box?')) {
+                showToast('Restarting device...');
+                setTimeout(() => {
+                    showToast('Device restarting...');
+                }, 2000);
+            }
+        }
+
+        // Panel navigation
+        function openPanel(category) {
+            document.querySelectorAll('.settings-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            const panel = document.getElementById(`${category}Panel`);
+            if (panel) {
+                panel.classList.add('active');
+                activeCategory = category;
+                currentFocusIndex = 0;
+                updateFocusableItems();
+            }
+        }
+
+        function closePanel() {
+            document.querySelectorAll('.settings-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            activeCategory = null;
+            currentFocusIndex = 0;
+            updateFocusableItems();
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.9);
+                color: #ff6b35;
+                padding: 15px 30px;
+                border-radius: 12px;
+                font-size: 18px;
+                z-index: 1000;
+                animation: fadeInOut 2s ease;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // Update system time
+        function updateSystemTime() {
+            const timeElem = document.getElementById('systemTime');
+            if (timeElem) {
+                const now = new Date();
+                timeElem.textContent = now.toLocaleString();
+            }
+        }
+        
+        // Setup sliders
+        function setupSliders() {
+            const volumeSlider = document.getElementById('volumeSlider');
+            const brightnessSlider = document.getElementById('brightnessSlider');
+            
+            if (volumeSlider) {
+                volumeSlider.addEventListener('click', (e) => {
+                    const rect = volumeSlider.getBoundingClientRect();
+                    const percent = (e.clientX - rect.left) / rect.width;
+                    currentVolume = Math.min(100, Math.max(0, Math.round(percent * 100)));
+                    const volumeFill = document.getElementById('volumeFill');
+                    const volumeValue = document.getElementById('volumeValue');
+                    if (volumeFill) volumeFill.style.width = `${currentVolume}%`;
+                    if (volumeValue) volumeValue.textContent = `${currentVolume}%`;
+                    showToast(`Volume: ${currentVolume}%`);
+                });
+            }
+            
+            if (brightnessSlider) {
+                brightnessSlider.addEventListener('click', (e) => {
+                    const rect = brightnessSlider.getBoundingClientRect();
+                    const percent = (e.clientX - rect.left) / rect.width;
+                    currentBrightness = Math.min(100, Math.max(0, Math.round(percent * 100)));
+                    adjustBrightness(currentBrightness);
+                });
+            }
+        }
+        
+        // Initialize
+        function init() {
+            // Set initial values
+            const volumeFill = document.getElementById('volumeFill');
+            const volumeValue = document.getElementById('volumeValue');
+            const brightnessFill = document.getElementById('brightnessFill');
+            const brightnessValue = document.getElementById('brightnessValue');
+            
+            if (volumeFill) volumeFill.style.width = `${currentVolume}%`;
+            if (volumeValue) volumeValue.textContent = `${currentVolume}%`;
+            if (brightnessFill) brightnessFill.style.width = `${currentBrightness}%`;
+            if (brightnessValue) brightnessValue.textContent = `${currentBrightness}%`;
+            
+            document.body.style.filter = `brightness(${currentBrightness}%)`;
+            
+            updateFocusableItems();
+            setupSliders();
+            setInterval(updateSystemTime, 1000);
+            
+            // Add animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0%, 100% { opacity: 0; transform: translateX(-50%) scale(0.9); }
+                    15%, 85% { opacity: 1; transform: translateX(-50%) scale(1); }
+                }
+                .focused {
+                    outline: none;
+                    transform: scale(1.02);
+                    transition: all 0.2s;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        init();
+    </script>
+</body>
+</html>

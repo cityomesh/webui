@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>ULKATV - Login</title>
     <style>
         * {
@@ -51,7 +51,7 @@
             width: 100%;
             height: 60px;
             background-color: rgba(255, 255, 255, 0.1);
-            border: 2px solid #444;
+            border: 5px solid #444;
             border-radius: 8px;
             padding: 0 16px;
             display: flex;
@@ -96,7 +96,14 @@
             color: #E50914;
             font-size: 16px;
             text-align: center;
-            margin: 10px 0;
+            word-break: break-word;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            font-size: 14px;
+            text-align: center;
+            margin: 5px 0;
         }
 
         .signin-btn {
@@ -143,7 +150,7 @@
             padding: 20px;
             background-color: rgba(20,20,20,0.98);
             border-radius: 15px;
-            border: 1px solid #E50914;
+            border: 3px solid #E50914;
             box-shadow: 0 15px 40px rgba(229,9,20,0.3);
         }
 
@@ -188,41 +195,356 @@
         .key-normal {
             flex: 1;
         }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            background: rgba(0,0,0,0.8);
+            padding: 20px 40px;
+            border-radius: 10px;
+            z-index: 2000;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .auto-login-info {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            margin-top: 15px;
+        }
+        
+        .clear-storage {
+            background: none;
+            border: none;
+            color: #E50914;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 5px;
+            text-decoration: underline;
+        }
+
+        .clear-storage:hover {
+            color: #ff4d4d;
+        }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
         <div class="login-box">
             <div class="login-logo">
-                <img src="images/ads/ulkaTv.png" alt="ULKA TV">
+                <img src="images/ads/ulkaTv.png" alt="ULKA TV" onerror="this.src='https://via.placeholder.com/380x100?text=ULKA+TV'">
             </div>
 
             <div style="width: 100%;">
                 <div class="input-container" id="username-container">
-                    <input type="text" id="username" placeholder="Username" value="admin" readonly>
+                    <input type="text" id="username" placeholder="Username" value="" readonly>
                 </div>
 
                 <div class="input-container" id="password-container">
-                    <input type="password" id="password" placeholder="Password" value="admin@123" readonly>
+                    <input type="password" id="password" placeholder="Password" value="" readonly>
                     <button class="password-toggle" id="toggle-password">👁️</button>
                 </div>
 
                 <div id="error-message" class="error-message"></div>
                 <button class="signin-btn" id="signin-btn">Sign In</button>
+                <div class="auto-login-info" id="autoLoginInfo"></div>
             </div>
         </div>
     </div>
 
-    <!-- Custom Keyboard -->
+    <div class="loading" id="loading">
+        Logging in...
+    </div>
+
     <div class="keyboard-container" id="keyboard-container">
         <div class="custom-keyboard" id="keyboard"></div>
     </div>
 
     <script>
+        // ==================== STORAGE KEYS ====================
+        const STORAGE_KEYS = {
+            USERNAME: 'ulkasaved_username',
+            PASSWORD: 'ulkasaved_password',
+            ACCESS_TOKEN: 'ulkasaved_access_token',
+            USER_DATA: 'ulkasaved_userData',
+            DEVICE_ID: 'deviceId',
+            LOGIN_VALIDATED: 'ulkasaved_validated'
+        };
+
+        // ==================== CHECK IF API RESPONSE IS SUCCESSFUL ====================
+        function isLoginSuccessful(response) {
+            // According to the API response format:
+            // Success: status_code = 200, error_code = 1, error_description = "OK", and response_object contains access_token
+            if (response && response.status_code === 200 && response.error_code === 1) {
+                // Also check if we have access_token
+                if (response.response_object && response.response_object.length > 0 && response.response_object[0].access_token) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // ==================== SAVE ONLY VALID CREDENTIALS ====================
+        function saveValidCredentials(username, password, apiResponse) {
+            try {
+                // Only save if login was successful
+                if (!isLoginSuccessful(apiResponse)) {
+                    console.warn('Cannot save invalid credentials - login was not successful');
+                    return false;
+                }
+                
+                if (!username || !password) {
+                    console.warn('Cannot save empty credentials');
+                    return false;
+                }
+                
+                // Get access token from response
+                const accessToken = apiResponse.response_object?.[0]?.access_token || '';
+                
+                // Store credentials
+                localStorage.setItem(STORAGE_KEYS.USERNAME, username);
+                localStorage.setItem(STORAGE_KEYS.PASSWORD, password);
+                if (accessToken) {
+                    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+                }
+                localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(apiResponse));
+                localStorage.setItem(STORAGE_KEYS.LOGIN_VALIDATED, 'true');
+                
+                console.log('✅ Valid credentials saved successfully');
+                return true;
+            } catch (e) {
+                console.error('Failed to save credentials:', e);
+                return false;
+            }
+        }
+
+        // ==================== LOAD SAVED CREDENTIALS ====================
+        function loadSavedCredentials() {
+            try {
+                const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+                const savedPassword = localStorage.getItem(STORAGE_KEYS.PASSWORD);
+                const isValidated = localStorage.getItem(STORAGE_KEYS.LOGIN_VALIDATED);
+                
+                // Only return if we have validated credentials
+                if (savedUsername && savedPassword && isValidated === 'true') {
+                    return {
+                        username: savedUsername,
+                        password: savedPassword
+                    };
+                }
+                return null;
+            } catch (e) {
+                console.error('Failed to load credentials:', e);
+                return null;
+            }
+        }
+
+        // ==================== CLEAR SAVED CREDENTIALS ====================
+        function clearSavedCredentials() {
+            localStorage.removeItem(STORAGE_KEYS.USERNAME);
+            localStorage.removeItem(STORAGE_KEYS.PASSWORD);
+            localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+            localStorage.removeItem(STORAGE_KEYS.LOGIN_VALIDATED);
+            console.log('🗑️ Saved credentials cleared');
+        }
+
+        // ==================== VERIFY CREDENTIALS WITH API ====================
+        async function verifyCredentialsWithAPI(username, password) {
+            try {
+                const deviceInfo = getDeviceInfo();
+                const timestamp = Date.now();
+                const authString = `username=${username};password=${password};boxid='';appid=1;timestamp=${timestamp}`;
+                
+                const requestData = {
+                    ...deviceInfo,
+                    auth: authString
+                };
+
+                console.log('Verifying credentials with API...');
+                
+                const response = await fetch('http://202.62.66.115:8080/apiv2/credentials/loginMini', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    return { success: false, message: 'Network error', status_code: response.status };
+                }
+
+                const data = await response.json();
+                console.log('API Response:', data);
+                return data;
+            } catch (error) {
+                console.error('API verification error:', error);
+                return { success: false, message: 'Connection failed' };
+            }
+        }
+
+        // ==================== AUTO LOGIN WITH VALIDATION ====================
+        async function attemptAutoLogin() {
+            const saved = loadSavedCredentials();
+            if (saved && saved.username && saved.password) {
+                console.log('🔄 Found saved credentials, verifying with API...');
+                const autoInfo = document.getElementById('autoLoginInfo');
+                if (autoInfo) autoInfo.innerHTML = `⏳ Verifying saved credentials... (${saved.username})`;
+                
+                // Set the username and password fields
+                username = saved.username;
+                password = saved.password;
+                updateInputFields();
+                
+                try {
+                    // ALWAYS verify saved credentials with API before auto-login
+                    const response = await verifyCredentialsWithAPI(username, password);
+                    
+                    if (isLoginSuccessful(response)) {
+                        // Valid credentials - update saved data with fresh response
+                        console.log('✅ Saved credentials verified successfully');
+                        saveValidCredentials(username, password, response);
+                        sessionStorage.setItem('username', username);
+                        sessionStorage.setItem('userData', JSON.stringify(response));
+                        sessionStorage.setItem('access_token', response.response_object?.[0]?.access_token || '');
+                        window.location.href = 'dashboard.html';
+                        return true;
+                    } else {
+                        // Invalid credentials - clear them
+                        const errorMsg = response?.error_description || 'Invalid or expired';
+                        console.warn('❌ Saved credentials are invalid:', errorMsg);
+                        clearSavedCredentials();
+                        username = '';
+                        password = '';
+                        updateInputFields();
+                        if (autoInfo) autoInfo.innerHTML = '⚠️ Saved login expired or invalid. Please sign in again.';
+                        errorMessage.textContent = '⚠️ Saved credentials are invalid. Please enter correct username and password.';
+                        errorMessage.style.color = '#E50914';
+                        setTimeout(() => {
+                            if (autoInfo.innerHTML === '⚠️ Saved login expired or invalid. Please sign in again.') {
+                                autoInfo.innerHTML = '💡 Only valid API credentials will be saved.';
+                            }
+                        }, 4000);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Auto-login verification error:', error);
+                    if (autoInfo) autoInfo.innerHTML = `⚠️ Network error. Please sign in manually.`;
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // Get device information
+        function getDeviceInfo() {
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            
+            return {
+                screensize: `${screenWidth}x${screenHeight}`,
+                appid: "1",
+                devicebrand: getDeviceBrand(),
+                googleappid: "",
+                ntype: "1",
+                app_name: "StreamTv+",
+                os: getOS(),
+                api_version: 28,
+                appversion: "1.3.0",
+                macaddress: "",
+                language: "eng",
+                device_ip: "",
+                device_timezone: new Date().getTimezoneOffset() / -60,
+                hdmi: "false",
+                firmwareversion: "",
+                deviceID: getDeviceId()
+            };
+        }
+
+        function getDeviceBrand() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes('Android')) return 'Android';
+            if (userAgent.includes('iPhone')) return 'Apple';
+            if (userAgent.includes('Windows')) return 'Windows';
+            if (userAgent.includes('Mac')) return 'Apple';
+            if (userAgent.includes('Linux')) return 'Linux';
+            if (userAgent.includes('LG') || userAgent.includes('webOS')) return 'LG';
+            if (userAgent.includes('Samsung')) return 'Samsung';
+            return 'Unknown';
+        }
+
+        function getOS() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes('Android')) return 'android';
+            if (userAgent.includes('iPhone') || userAgent.includes('iPad')) return 'ios';
+            if (userAgent.includes('Windows')) return 'windows';
+            if (userAgent.includes('Mac')) return 'macos';
+            if (userAgent.includes('Linux')) return 'linux';
+            if (userAgent.includes('webOS') || userAgent.includes('Web0S')) return 'webos';
+            return 'web';
+        }
+
+        function getDeviceId() {
+            let deviceId = localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
+            if (!deviceId) {
+                deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+                localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
+            }
+            return deviceId;
+        }
+
+        // API Login function
+        async function apiLogin(username, password) {
+            const deviceInfo = getDeviceInfo();
+            const timestamp = Date.now();
+            
+            const authString = `username=${username};password=${password};boxid='';appid=1;timestamp=${timestamp}`;
+            
+            const requestData = {
+                ...deviceInfo,
+                auth: authString
+            };
+
+            console.log('Sending login request...', requestData);
+
+            try {
+                const response = await fetch('http://202.62.66.115:8080/apiv2/credentials/loginMini', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Login API response:', data);
+                return data;
+            } catch (error) {
+                console.error('Login API error:', error);
+                throw error;
+            }
+        }
+
         // Login state variables
-        let username = 'admin';
-        let password = 'admin@123';
+        let username = '';
+        let password = '';
         let showPassword = false;
         let isCaps = false;
         let isSymbol = false;
@@ -230,9 +552,6 @@
         let kbPos = { row: 0, col: 0 };
         let isKeyboardVisible = false;
         let keyboardTarget = '';
-        
-        const VALID_USERNAME = 'admin';
-        const VALID_PASSWORD = 'admin@123';
 
         const KEYBOARD_LAYOUT = [
             ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
@@ -251,7 +570,6 @@
         ];
 
         // DOM Elements
-        const loginScreen = document.getElementById('loginScreen');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const usernameContainer = document.getElementById('username-container');
@@ -261,14 +579,45 @@
         const keyboardContainer = document.getElementById('keyboard-container');
         const keyboard = document.getElementById('keyboard');
         const togglePassword = document.getElementById('toggle-password');
+        const loading = document.getElementById('loading');
 
-        // Initialize login
         function initLogin() {
-            usernameInput.value = username;
-            passwordInput.value = password;
+            username = '';
+            password = '';
+            updateInputFields();
             renderKeyboard();
             addEventListeners();
             clearError();
+            updateAutoLoginInfo();
+        }
+        
+        function updateAutoLoginInfo() {
+            const autoInfo = document.getElementById('autoLoginInfo');
+            const saved = loadSavedCredentials();
+            if (saved && saved.username) {
+                autoInfo.innerHTML = `🔐 Saved valid account: ${saved.username} | <button class="clear-storage" id="clearStorageBtn">Clear</button>`;
+                const clearBtn = document.getElementById('clearStorageBtn');
+                if (clearBtn) {
+                    clearBtn.removeEventListener('click', clearBtn.click);
+                    clearBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        clearSavedCredentials();
+                        username = '';
+                        password = '';
+                        updateInputFields();
+                        autoInfo.innerHTML = '💡 Only valid API credentials will be saved.';
+                        errorMessage.textContent = '✅ Saved credentials cleared.';
+                        errorMessage.style.color = '#4CAF50';
+                        setTimeout(() => {
+                            if (errorMessage.textContent === '✅ Saved credentials cleared.') {
+                                errorMessage.textContent = '';
+                            }
+                        }, 2000);
+                    });
+                }
+            } else {
+                autoInfo.innerHTML = '💡 ';
+            }
         }
 
         function addEventListeners() {
@@ -301,10 +650,19 @@
 
         function clearError() {
             errorMessage.textContent = '';
+            errorMessage.style.color = '#E50914';
+        }
+
+        function showError(message) {
+            errorMessage.innerHTML = `⚠️ ${message}`;
+            errorMessage.style.color = '#E50914';
         }
 
         function handleKeyDown(e) {
-            e.preventDefault();
+            const navKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'];
+            if (navKeys.includes(e.key)) {
+                e.preventDefault();
+            }
 
             switch (e.key) {
                 case 'ArrowUp':
@@ -402,20 +760,69 @@
             passwordInput.value = password;
         }
 
-        function handleLogin() {
+        async function handleLogin() {
+            if (!username || !password) {
+                showError('Please enter username and password');
+                return;
+            }
+
             isKeyboardVisible = false;
             keyboardTarget = '';
-            
-            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-                // Store username in sessionStorage for dashboard
-                sessionStorage.setItem('username', username);
-                // Redirect to dashboard page
-                window.location.href = 'dashboard.html';
-            } else {
-                errorMessage.textContent = '⚠️ Invalid username or password';
-            }
             updateFocus();
             renderKeyboard();
+
+            loading.classList.add('active');
+            errorMessage.innerHTML = '';
+            errorMessage.style.color = '#E50914';
+
+            try {
+                const response = await apiLogin(username, password);
+                
+                // Check if login was successful using the correct API response format
+                if (isLoginSuccessful(response)) {
+                    // ✅ VALID CREDENTIALS - Save them
+                    console.log('✅ Valid credentials from API, saving...');
+                    saveValidCredentials(username, password, response);
+                    
+                    sessionStorage.setItem('username', username);
+                    sessionStorage.setItem('userData', JSON.stringify(response));
+                    sessionStorage.setItem('access_token', response.response_object?.[0]?.access_token || '');
+                    
+                    // Show success message
+                    errorMessage.innerHTML = '✅ Login successful! Redirecting...';
+                    errorMessage.style.color = '#4CAF50';
+                    
+                    updateAutoLoginInfo();
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    // ❌ INVALID CREDENTIALS - Do NOT save, show error
+                    const apiMessage = response?.error_description || 'Invalid username or password';
+                    console.warn('❌ Invalid credentials from API:', apiMessage);
+                    showError(apiMessage);
+                    
+                    // Clear any previously saved invalid credentials
+                    clearSavedCredentials();
+                    
+                    // Clear password field for security
+                    password = '';
+                    updateInputFields();
+                    
+                    updateAutoLoginInfo();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Login failed. Please check your connection and try again.');
+                
+                // On network error, don't save credentials
+                clearSavedCredentials();
+                updateAutoLoginInfo();
+            } finally {
+                loading.classList.remove('active');
+            }
         }
 
         function updateFocus() {
@@ -453,8 +860,13 @@
             keyboard.innerHTML = html;
         }
 
-        // Initialize login
+        // Start the app
         initLogin();
+        
+        // Attempt auto-login after verifying with API
+        setTimeout(async () => {
+            await attemptAutoLogin();
+        }, 100);
     </script>
 </body>
 </html>

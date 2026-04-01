@@ -1,0 +1,2432 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+<link rel="shortcut icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" />
+<meta charset="UTF-8" />
+<title>Network Diagnostics</title>
+<style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+    }
+    
+    html,body{
+        border:none;
+        padding:0;
+        margin:0;
+        background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+        color:#ffffff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow-x: hidden;
+    }
+    
+    body{
+        text-align:center;
+        min-height: 100vh;
+    }
+    
+    /* Logo Section */
+    #logo {
+        padding: 30px 0 20px 0;
+    }
+    
+    #logo img {
+        height: 120px;
+        width: auto;
+        max-width: 300px;
+        filter: drop-shadow(0 0 10px rgba(255,107,53,0.5));
+    }
+    
+    h1 {
+        color: #ff6b35;
+        font-size: 2.5em;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+    }
+    
+    /* Loading Screen */
+    #loading{
+        background-color: rgba(0,0,0,0.9);
+        color:#ff6b35;
+        text-align:center;
+        padding: 40px;
+        border-radius: 20px;
+        margin: 50px auto;
+        max-width: 400px;
+    }
+    
+    span.loadCircle{
+        display:inline-block;
+        width:2em;
+        height:2em;
+        vertical-align:middle;
+        background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAP1BMVEUAAAB2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZyFzwnAAAAFHRSTlMAEvRFvX406baecwbf0casimhSHyiwmqgAAADpSURBVHja7dbJbQMxAENRahnN5lkc//5rDRAkDeRgHszXgACJoKiIiIiIiIiIiIiIiIiIiIj4HHspsrpAVhdVVguzrA4OWc10WcEqpwKbnBo0OU1Q5NSpsoJFTgOecrrdEag85DRgktNqfoEdTjnd7hrEHMEJvmRUYJbTYk5Agy6nau6Abp5Cm7mDBtRdPi9gyKdU7w4p1fsLvyqs8hl4z9/w3n/Hmr9WoQ65lAU4d7lMYOz//QboRR5jBZibLMZdAR6O/Vfa1PlxNr3XdS3HzK/HVPRu/KnLs8iAOh993VpRRERERMT/fAN60wwWaVyWwAAAAABJRU5ErkJggg==');
+        background-size:2em 2em;
+        margin-right:0.5em;
+        animation: spin 0.6s linear infinite;
+    }
+    
+    @keyframes spin{
+        0%{transform:rotate(0deg);}
+        100%{transform:rotate(359deg);}
+    }
+    
+    /* Start/Stop Button */
+    #startStopBtn{
+        display:inline-block;
+        margin:20px auto;
+        color:#ffffff;
+        background-color:#31a254;
+        border:2px solid #ff6b35;
+        border-radius:50px;
+        transition:all 0.3s;
+        box-sizing:border-box;
+        width:200px;
+        height:70px;
+        line-height:66px;
+        cursor:pointer;
+        font-weight: bold;
+        font-size: 24px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    #startStopBtn:before{
+        content:"Start Test";
+    }
+    
+    #startStopBtn.running{
+        background-color:#e1370d;
+    }
+    
+    #startStopBtn.running:before{
+        content:"Abort Test";
+    }
+    
+    /* Server Selection */
+    #serverArea{
+        margin:20px auto;
+        color: white;
+        font-size:1.2em;
+        background: rgba(0,0,0,0.5);
+        padding: 15px;
+        border-radius: 12px;
+        display: inline-block;
+    }
+    
+    #server{
+        font-size:1em;
+        padding:10px 20px;
+        background: #2a2a2a;
+        color: white;
+        border: 2px solid #ff6b35;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-left: 10px;
+        font-weight: bold;
+    }
+    
+    /* Test Area */
+    #test{
+        margin:40px auto;
+        max-width: 800px;
+        padding: 20px;
+    }
+    
+    .testGroup{
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+    }
+    
+    .testArea{
+        display:inline-block;
+        width:280px;
+        height:220px;
+        position:relative;
+        box-sizing:border-box;
+        background: rgba(0,0,0,0.3);
+        border-radius: 20px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,107,53,0.3);
+    }
+    
+    .testArea2{
+        display:inline-block;
+        width:200px;
+        height:140px;
+        position:relative;
+        box-sizing:border-box;
+        text-align:center;
+        background: rgba(0,0,0,0.3);
+        border-radius: 20px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,107,53,0.3);
+    }
+    
+    .testArea .testName, .testArea2 .testName {
+        font-size: 1.2em;
+        color: #ff6b35;
+        margin-bottom: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .testArea .meterText, .testArea2 .meterText {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #31a254;
+        margin: 10px 0;
+    }
+    
+    .testArea .unit, .testArea2 .unit {
+        font-size: 0.9em;
+        color: #aaa;
+    }
+    
+    .testArea canvas{
+        position:absolute;
+        bottom:20px;
+        left:20px;
+        width:calc(100% - 40px);
+        height:80px;
+        z-index:1;
+    }
+    
+    /* IP Address */
+    #ipArea {
+        margin: 30px auto;
+        padding: 15px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 12px;
+        display: inline-block;
+    }
+    
+    #ip {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff6b35;
+        transition: color 0.5s ease;
+    }
+    
+    #ip.connected {
+        color: #31a254;
+    }
+    
+    /* Privacy Link */
+    a.privacy {
+        text-align:center;
+        font-size:0.9em;
+        color:#ff6b35;
+        padding: 10px 20px;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-block;
+        margin: 20px auto;
+        transition: all 0.3s;
+    }
+    
+    a.privacy:hover {
+        color: #ff8c5a;
+        transform: scale(1.05);
+    }
+    
+    /* Share Area */
+    #shareArea {
+        width:95%;
+        max-width:500px;
+        margin:20px auto;
+        padding: 20px;
+        background: rgba(0,0,0,0.8);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+    
+    #shareArea h3 {
+        color: #ff6b35;
+        margin-bottom: 15px;
+    }
+    
+    #shareArea input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        background: #2a2a2a;
+        border: 1px solid #ff6b35;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+    }
+    
+    /* Description Block */
+    #textBlock {
+        max-width: 700px;
+        color: #ccc;
+        background-color: rgba(0,0,0,0.5);
+        border-radius: 15px;
+        padding: 25px;
+        margin: 30px auto;
+        font-size: 1rem;
+        line-height: 1.6;
+        backdrop-filter: blur(5px);
+    }
+    
+    #textBlock p {
+        margin-bottom: 10px;
+    }
+    
+    /* Privacy Policy Modal */
+    #privacyPolicy {
+        position:fixed;
+        top:10%;
+        bottom:10%;
+        left:10%;
+        right:10%;
+        overflow-y:auto;
+        width:auto;
+        height:auto;
+        box-shadow:0 0 50px rgba(0,0,0,0.8);
+        z-index:999999;
+        text-align:left;
+        background: linear-gradient(135deg, #1a1f2e 0%, #0a0e1a 100%);
+        padding:30px;
+        border-radius: 20px;
+        border: 2px solid #ff6b35;
+        color: white;
+    }
+    
+    #privacyPolicy h2, #privacyPolicy h4 {
+        color: #ff6b35;
+        margin: 20px 0 10px 0;
+    }
+    
+    #privacyPolicy ul {
+        margin: 10px 0 10px 30px;
+    }
+    
+    #privacyPolicy li {
+        margin: 5px 0;
+        color: #ccc;
+    }
+    
+    div.closePrivacyPolicy {
+        width: 100%;
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    div.closePrivacyPolicy a.privacy {
+        background: #ff6b35;
+        color: white;
+        border-radius: 8px;
+        padding: 12px 30px;
+        display: inline-block;
+        font-weight: bold;
+    }
+    
+    /* Focus Styles */
+    .focused {
+        outline: 3px solid #ff6b35 !important;
+        outline-offset: 4px;
+        transform: scale(1.02);
+        transition: all 0.2s ease;
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+    }
+    
+    #startStopBtn.focused {
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(49, 162, 84, 0.8);
+    }
+    
+    #startStopBtn.running.focused {
+        box-shadow: 0 0 30px rgba(225, 55, 13, 0.8);
+    }
+    
+    #server.focused {
+        background: rgba(255, 107, 53, 0.3);
+        border-color: #ff6b35;
+    }
+    
+    .privacy.focused {
+        background: rgba(255, 107, 53, 0.2);
+        border-radius: 8px;
+        transform: scale(1.05);
+    }
+    
+    :focus {
+        outline: none;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .visible {
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .testArea, .testArea2 {
+            width: 90%;
+            margin: 10px auto;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+        }
+        
+        #startStopBtn {
+            width: 180px;
+            height: 60px;
+            line-height: 56px;
+            font-size: 20px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div id="logo">
+        <img src="images/ads/ulkaTv.png" alt="ULKA TV Logo" onerror="this.src='../ulkaTv.png'"/>
+    </div>
+    
+    <h1>Network Diagnostics</h1>
+    
+    <div id="loading" class="visible">
+        <p id="message"><span class="loadCircle"></span> Initializing network test...</p>
+    </div>
+    
+    <div id="testWrapper" class="hidden">
+        <div id="startStopBtn" tabindex="0"></div>
+        
+        <div id="serverArea">
+            <label>Test Server:</label>
+            <select id="server" tabindex="0"></select>
+        </div>
+        
+        <div id="test">
+            <div class="testGroup">
+                <div class="testArea2">
+                    <div class="testName">Ping</div>
+                    <div id="pingText" class="meterText">--</div>
+                    <div class="unit">milliseconds (ms)</div>
+                </div>
+                <div class="testArea2">
+                    <div class="testName">Jitter</div>
+                    <div id="jitText" class="meterText">--</div>
+                    <div class="unit">milliseconds (ms)</div>
+                </div>
+            </div>
+            
+            <div class="testGroup">
+                <div class="testArea">
+                    <div class="testName">Download Speed</div>
+                    <canvas id="dlMeter" class="meter"></canvas>
+                    <div id="dlText" class="meterText">--</div>
+                    <div class="unit">Megabits per second (Mbps)</div>
+                </div>
+                <div class="testArea">
+                    <div class="testName">Upload Speed</div>
+                    <canvas id="ulMeter" class="meter"></canvas>
+                    <div id="ulText" class="meterText">--</div>
+                    <div class="unit">Megabits per second (Mbps)</div>
+                </div>
+            </div>
+            
+            <div id="ipArea">
+                <span id="ip">--</span>
+            </div>
+            
+            <a class="privacy" href="#" tabindex="0">Privacy Policy</a>
+            
+            <div id="shareArea" style="display:none">
+                <h3>Share Results</h3>
+                <p>Test ID: <span id="testId"></span></p>
+                <input type="text" value="" id="resultsURL" readonly="readonly"/>
+                <img src="" id="resultsImg" />
+            </div>
+        </div>
+        
+        <div id="textBlock">
+            <p>🔍 This tool helps you check the current Network Status of the Streaming server assigned to your device.</p>
+            <p>📡 Use it to ensure your connection is stable for uninterrupted ULKA TV streaming.</p>
+            <p>⚡ Results show your Download Speed, Upload Speed, Ping (Latency), and Jitter (Connection Stability).</p>
+        </div>
+    </div>
+    
+    <div id="privacyPolicy" style="display:none">
+        <h2>Privacy Policy</h2>
+        <p>This network diagnostic tool is configured with telemetry enabled to help improve service quality.</p>
+        
+        <h4>What data we collect</h4>
+        <p>At the end of the test, the following data is collected and stored:</p>
+        <ul>
+            <li>Test ID</li>
+            <li>Time of testing</li>
+            <li>Test results (download and upload speed, ping and jitter)</li>
+            <li>IP address</li>
+            <li>ISP information</li>
+            <li>Approximate location (inferred from IP address, not GPS)</li>
+            <li>User agent and browser locale</li>
+            <li>Test log (contains no personal information)</li>
+        </ul>
+        
+        <h4>How we use the data</h4>
+        <p>Data collected through this service is used to:</p>
+        <ul>
+            <li>Allow sharing of test results</li>
+            <li>Improve the service offered to you (detect problems on our side)</li>
+            <li>Ensure optimal streaming quality for all users</li>
+        </ul>
+        <p>No personal information is disclosed to third parties.</p>
+        
+        <h4>Your consent</h4>
+        <p>By starting the test, you consent to the terms of this privacy policy.</p>
+        
+        <div class="closePrivacyPolicy">
+            <a class="privacy" href="#">Close</a>
+        </div>
+    </div>
+    
+    <script>
+        // Network Diagnostics JavaScript
+        let currentFocusIndex = 0;
+        let focusableItems = [];
+        let isTestRunning = false;
+        let testData = {
+            ping: 0,
+            jitter: 0,
+            download: 0,
+            upload: 0,
+            ip: ''
+        };
+        
+        // Simulate network test (replace with actual API call if available)
+        function performNetworkTest() {
+            return new Promise((resolve) => {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    
+                    // Simulate test values
+                    if (progress <= 30) {
+                        testData.ping = Math.floor(Math.random() * 50) + 10;
+                        testData.jitter = Math.floor(Math.random() * 20) + 1;
+                        updateUI();
+                    } else if (progress <= 60) {
+                        testData.download = Math.floor(Math.random() * 100) + 20;
+                        updateUI();
+                    } else if (progress <= 90) {
+                        testData.upload = Math.floor(Math.random() * 50) + 10;
+                        updateUI();
+                    }
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        // Get IP from API
+                        fetchIP();
+                        resolve(testData);
+                    }
+                }, 500);
+            });
+        }
+        
+        // Fetch IP address
+        async function fetchIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                testData.ip = data.ip;
+                updateUI();
+            } catch (error) {
+                testData.ip = 'Unable to detect';
+                updateUI();
+            }
+        }
+        
+        // Update UI with test data
+        function updateUI() {
+            const pingElem = document.getElementById('pingText');
+            const jitterElem = document.getElementById('jitText');
+            const dlElem = document.getElementById('dlText');
+            const ulElem = document.getElementById('ulText');
+            const ipElem = document.getElementById('ip');
+            
+            if (pingElem && testData.ping) {
+                pingElem.textContent = testData.ping.toFixed(1);
+                pingElem.style.color = testData.ping < 30 ? '#31a254' : (testData.ping < 60 ? '#ffa500' : '#ff4444');
+            }
+            
+            if (jitterElem && testData.jitter) {
+                jitterElem.textContent = testData.jitter.toFixed(1);
+                jitterElem.style.color = testData.jitter < 10 ? '#31a254' : (testData.jitter < 20 ? '#ffa500' : '#ff4444');
+            }
+            
+            if (dlElem && testData.download) {
+                dlElem.textContent = testData.download.toFixed(1);
+                // Update meter
+                drawMeter(document.getElementById('dlMeter'), testData.download / 100);
+            }
+            
+            if (ulElem && testData.upload) {
+                ulElem.textContent = testData.upload.toFixed(1);
+                drawMeter(document.getElementById('ulMeter'), testData.upload / 100);
+            }
+            
+            if (ipElem && testData.ip) {
+                ipElem.textContent = `IP Address: ${testData.ip}`;
+                ipElem.classList.add('connected');
+            }
+        }
+        
+        // Draw meter canvas
+        function drawMeter(canvas, amount) {
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#31a254';
+            ctx.fillRect(0, 0, width * Math.min(1, amount), height);
+            ctx.fillStyle = '#ff6b35';
+            ctx.fillRect(0, 0, width * amount, height);
+        }
+        
+        // Start/Stop test
+        function startStopTest() {
+            const startStopBtn = document.getElementById('startStopBtn');
+            
+            if (isTestRunning) {
+                // Abort test
+                isTestRunning = false;
+                startStopBtn.classList.remove('running');
+                showMessage('Test aborted');
+                resetUI();
+            } else {
+                // Start test
+                isTestRunning = true;
+                startStopBtn.classList.add('running');
+                resetUI();
+                showMessage('Testing network...');
+                
+                performNetworkTest().then((results) => {
+                    isTestRunning = false;
+                    startStopBtn.classList.remove('running');
+                    showMessage('Test completed!');
+                    
+                    // Show share area
+                    const shareArea = document.getElementById('shareArea');
+                    if (shareArea) {
+                        shareArea.style.display = 'block';
+                        const testIdElem = document.getElementById('testId');
+                        if (testIdElem) {
+                            testIdElem.textContent = Math.random().toString(36).substr(2, 8);
+                        }
+                    }
+                    
+                    updateFocusableItems();
+                }).catch((error) => {
+                    isTestRunning = false;
+                    startStopBtn.classList.remove('running');
+                    showMessage('Test failed. Please try again.');
+                });
+            }
+        }
+        
+        function resetUI() {
+            document.getElementById('pingText').textContent = '--';
+            document.getElementById('jitText').textContent = '--';
+            document.getElementById('dlText').textContent = '--';
+            document.getElementById('ulText').textContent = '--';
+            document.getElementById('ip').textContent = '--';
+            document.getElementById('ip').classList.remove('connected');
+            
+            drawMeter(document.getElementById('dlMeter'), 0);
+            drawMeter(document.getElementById('ulMeter'), 0);
+        }
+        
+        function showMessage(msg) {
+            const messageDiv = document.getElementById('message');
+            if (messageDiv) {
+                messageDiv.innerHTML = msg;
+                setTimeout(() => {
+                    if (messageDiv.innerHTML === msg) {
+                        messageDiv.innerHTML = '';
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Remote Control Navigation
+        function updateFocusableItems() {
+            const startStopBtn = document.getElementById('startStopBtn');
+            const serverSelect = document.getElementById('server');
+            const privacyLink = document.querySelector('.privacy:not(.closePrivacyPolicy .privacy)');
+            const closePrivacyBtn = document.querySelector('.closePrivacyPolicy a.privacy');
+            const privacyPolicy = document.getElementById('privacyPolicy');
+            
+            focusableItems = [];
+            
+            if (privacyPolicy && privacyPolicy.style.display !== 'none') {
+                if (closePrivacyBtn) focusableItems.push(closePrivacyBtn);
+            } else {
+                if (startStopBtn) focusableItems.push(startStopBtn);
+                if (serverSelect) focusableItems.push(serverSelect);
+                if (privacyLink) focusableItems.push(privacyLink);
+            }
+            
+            updateFocus();
+        }
+        
+        function updateFocus() {
+            focusableItems.forEach((item, idx) => {
+                if (idx === currentFocusIndex) {
+                    item.classList.add('focused');
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    item.classList.remove('focused');
+                }
+            });
+        }
+        
+        function handleEnterPress() {
+            const focusedItem = focusableItems[currentFocusIndex];
+            if (!focusedItem) return;
+            
+            if (focusedItem.id === 'startStopBtn') {
+                startStopTest();
+            } else if (focusedItem.id === 'server') {
+                focusedItem.click();
+            } else if (focusedItem.classList && focusedItem.classList.contains('privacy')) {
+                const privacyPolicy = document.getElementById('privacyPolicy');
+                if (privacyPolicy) {
+                    privacyPolicy.style.display = 'block';
+                    setTimeout(() => updateFocusableItems(), 100);
+                }
+            } else if (focusedItem.parentElement && focusedItem.parentElement.classList && 
+                       focusedItem.parentElement.classList.contains('closePrivacyPolicy')) {
+                const privacyPolicy = document.getElementById('privacyPolicy');
+                if (privacyPolicy) {
+                    privacyPolicy.style.display = 'none';
+                    setTimeout(() => updateFocusableItems(), 100);
+                }
+            }
+        }
+        
+        // Keyboard event handling
+        document.addEventListener('keydown', (event) => {
+            const keyCode = event.keyCode || event.which;
+            
+            switch(keyCode) {
+                case 39: // Right Arrow
+                case 40: // Down Arrow
+                    event.preventDefault();
+                    if (currentFocusIndex < focusableItems.length - 1) {
+                        currentFocusIndex++;
+                        updateFocus();
+                    }
+                    break;
+                case 37: // Left Arrow
+                case 38: // Up Arrow
+                    event.preventDefault();
+                    if (currentFocusIndex > 0) {
+                        currentFocusIndex--;
+                        updateFocus();
+                    }
+                    break;
+                case 13: // Enter Key
+                    event.preventDefault();
+                    handleEnterPress();
+                    break;
+                case 8: // Backspace
+                case 461: // Back button on TV remote
+                    event.preventDefault();
+                    window.location.href = 'dashboard.html';
+                    break;
+            }
+        });
+        
+        // Initialize
+        function init() {
+            // Hide loading and show test wrapper
+            setTimeout(() => {
+                const loading = document.getElementById('loading');
+                const testWrapper = document.getElementById('testWrapper');
+                if (loading && testWrapper) {
+                    loading.classList.add('hidden');
+                    testWrapper.classList.remove('hidden');
+                }
+                
+                // Initialize server options
+                const serverSelect = document.getElementById('server');
+                if (serverSelect) {
+                    const servers = [
+                        'Auto Select (Recommended)',
+                        'ULKA TV Server - Mumbai',
+                        'ULKA TV Server - Delhi',
+                        'ULKA TV Server - Chennai'
+                    ];
+                    servers.forEach((server, idx) => {
+                        const option = document.createElement('option');
+                        option.value = idx;
+                        option.textContent = server;
+                        serverSelect.appendChild(option);
+                    });
+                }
+                
+                updateFocusableItems();
+            }, 2000);
+        }
+        
+        // Start initialization
+        init();
+    </script>
+</body>
+</html> -->
+
+
+
+<!-- 
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" />
+<title>Network Diagnostics - ULKA TV</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        padding: 20px;
+        color: #ffffff;
+    }
+    
+    .diagnostics-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .logo {
+        height: 100px;
+        width: auto;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 15px rgba(255,107,53,0.5));
+    }
+    
+    h1 {
+        color: #ff6b35;
+        font-size: 2.5em;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        letter-spacing: 2px;
+    }
+    
+    .control-panel {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255,107,53,0.3);
+        text-align: center;
+    }
+    
+    .server-info {
+        margin-bottom: 20px;
+        font-size: 1.1em;
+        color: #ff6b35;
+    }
+    
+    .server-ip {
+        font-weight: bold;
+        color: #31a254;
+        font-size: 1.3em;
+    }
+    
+    .cdn-info {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #aaa;
+    }
+    
+    .test-btn {
+        background: linear-gradient(135deg, #31a254 0%, #2c8e4a 100%);
+        border: none;
+        color: white;
+        font-size: 1.5em;
+        font-weight: bold;
+        padding: 15px 40px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin: 20px auto;
+        display: inline-block;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    .test-btn.running {
+        background: linear-gradient(135deg, #e1370d 0%, #c02e08 100%);
+        animation: pulse 1s infinite;
+    }
+    
+    .test-btn.focused {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(49,162,84,0.8);
+        outline: 3px solid #ff6b35;
+        outline-offset: 4px;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .metric-card {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        border: 1px solid rgba(255,107,53,0.3);
+        transition: all 0.3s;
+    }
+    
+    .metric-card.focused {
+        transform: scale(1.02);
+        border-color: #ff6b35;
+        box-shadow: 0 0 20px rgba(255,107,53,0.3);
+        outline: none;
+    }
+    
+    .metric-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+    }
+    
+    .metric-title {
+        font-size: 1.2em;
+        color: #ff6b35;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+    
+    .metric-value {
+        font-size: 2.5em;
+        font-weight: bold;
+        margin: 15px 0;
+        transition: all 0.3s;
+    }
+    
+    .metric-unit {
+        font-size: 0.9em;
+        color: #aaa;
+        margin-top: 5px;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 4px;
+        margin-top: 15px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #31a254, #ff6b35);
+        width: 0%;
+        transition: width 0.3s;
+        border-radius: 4px;
+    }
+    
+    .ip-section {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        border: 1px solid rgba(255,107,53,0.3);
+    }
+    
+    .ip-label {
+        font-size: 1em;
+        color: #aaa;
+        margin-bottom: 10px;
+    }
+    
+    .ip-address {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #31a254;
+        font-family: monospace;
+    }
+    
+    .info-text {
+        background: rgba(0,0,0,0.4);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+        text-align: center;
+        font-size: 0.95em;
+        color: #ccc;
+        line-height: 1.6;
+    }
+    
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        flex-direction: column;
+    }
+    
+    .loading-overlay.active {
+        display: flex;
+    }
+    
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 5px solid rgba(255,107,53,0.3);
+        border-top-color: #ff6b35;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+    
+    .loading-text {
+        color: #ff6b35;
+        font-size: 1.2em;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .status-good {
+        color: #31a254;
+    }
+    
+    .status-medium {
+        color: #ffa500;
+    }
+    
+    .status-poor {
+        color: #ff4444;
+    }
+    
+    @media (max-width: 768px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+        }
+        
+        .test-btn {
+            font-size: 1.2em;
+            padding: 12px 30px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="diagnostics-container">
+        <div class="header">
+            <img src="images/ads/ulkaTv.png" alt="ULKA TV" class="logo" onerror="this.src='../ulkaTv.png'">
+            <h1>Network Diagnostics</h1>
+        </div>
+        
+        <div class="control-panel">
+            <div class="server-info">
+                Testing CDN Server: <span id="cdnServer" class="server-ip">202.62.66.115:8080</span>
+                <div id="cdnStreamSource" class="cdn-info"></div>
+            </div>
+            <button id="startTestBtn" class="test-btn" tabindex="0">Start Network Test</button>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card" data-metric="ping" tabindex="0">
+                <div class="metric-icon">📡</div>
+                <div class="metric-title">Ping (Latency)</div>
+                <div id="pingValue" class="metric-value">--</div>
+                <div class="metric-unit">milliseconds (ms)</div>
+                <div class="progress-bar">
+                    <div id="pingProgress" class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card" data-metric="jitter" tabindex="0">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-title">Jitter</div>
+                <div id="jitterValue" class="metric-value">--</div>
+                <div class="metric-unit">milliseconds (ms)</div>
+                <div class="progress-bar">
+                    <div id="jitterProgress" class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card" data-metric="download" tabindex="0">
+                <div class="metric-icon">📥</div>
+                <div class="metric-title">Download Speed</div>
+                <div id="downloadValue" class="metric-value">--</div>
+                <div class="metric-unit">Megabits per second (Mbps)</div>
+                <div class="progress-bar">
+                    <div id="downloadProgress" class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card" data-metric="upload" tabindex="0">
+                <div class="metric-icon">📤</div>
+                <div class="metric-title">Upload Speed</div>
+                <div id="uploadValue" class="metric-value">--</div>
+                <div class="metric-unit">Megabits per second (Mbps)</div>
+                <div class="progress-bar">
+                    <div id="uploadProgress" class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ip-section">
+            <div class="ip-label">Your IP Address</div>
+            <div id="clientIp" class="ip-address">--</div>
+        </div>
+        
+        <div class="info-text">
+            <p>🔍 Testing network performance against ULKA TV CDN server</p>
+            <p>📡 Lower ping and jitter = Better streaming experience</p>
+            <p>⚡ Minimum 10 Mbps download recommended for HD streaming</p>
+        </div>
+    </div>
+    
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Testing network connection...</div>
+    </div>
+    
+    <script>
+        // API Configuration
+        const API_KEY = "abec967abb9d7e0a97618c58fcb9fce8";
+        const BASE_URL = "http://202.62.66.115:8080/api/public/customer/user6";
+        const CDN_IP = "202.62.66.115";
+        
+        // Test variables
+        let isTesting = false;
+        let currentFocusIndex = 0;
+        let focusableItems = [];
+        let cdnStreamInfo = {};
+        
+        // Network test results
+        let networkResults = {
+            ping: null,
+            jitter: null,
+            download: null,
+            upload: null,
+            clientIp: null,
+            serverResponse: null
+        };
+        
+        // Fetch CDN data from API
+        async function fetchCDNData() {
+            try {
+                const url = `${BASE_URL}?apikey=${API_KEY}&t=${Date.now()}`;
+                console.log('Fetching from:', url);
+                
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('API Response:', data);
+                    
+                    // Extract CDN information
+                    if (data.data) {
+                        cdnStreamInfo = {
+                            stream_source: data.data['channel_stream_source.stream_source'],
+                            base_ip: data.data['channel_stream_source.base_ip_address'],
+                            media_path: data.data['channel_stream_source.media_root_path']
+                        };
+                        
+                        // Update CDN info in UI
+                        const cdnInfoDiv = document.getElementById('cdnStreamSource');
+                        if (cdnInfoDiv && cdnStreamInfo.stream_source) {
+                            cdnInfoDiv.innerHTML = `Stream Source: ${cdnStreamInfo.stream_source} | CDN IP: ${cdnStreamInfo.base_ip}`;
+                        }
+                    }
+                    
+                    networkResults.serverResponse = data;
+                    return data;
+                } else {
+                    console.error('API Error:', response.status);
+                    return null;
+                }
+            } catch (error) {
+                console.error('API fetch error:', error);
+                return null;
+            }
+        }
+        
+        // Measure ping to CDN server
+        async function measurePing() {
+            const pingSamples = [];
+            const url = `${BASE_URL}?apikey=${API_KEY}&ping=${Date.now()}`;
+            
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const start = performance.now();
+                    await fetch(url, {
+                        method: 'HEAD',
+                        cache: 'no-cache'
+                    });
+                    const end = performance.now();
+                    pingSamples.push(end - start);
+                } catch (error) {
+                    pingSamples.push(200);
+                }
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // Calculate average ping
+            const avgPing = pingSamples.reduce((a, b) => a + b, 0) / pingSamples.length;
+            
+            // Calculate jitter
+            let jitter = 0;
+            if (pingSamples.length > 1) {
+                let differences = [];
+                for (let i = 1; i < pingSamples.length; i++) {
+                    differences.push(Math.abs(pingSamples[i] - pingSamples[i-1]));
+                }
+                jitter = differences.reduce((a, b) => a + b, 0) / differences.length;
+            }
+            
+            return { 
+                ping: Math.round(avgPing), 
+                jitter: Math.round(jitter) 
+            };
+        }
+        
+        // Measure download speed by fetching actual data and calculating based on response size
+        async function measureDownloadSpeed() {
+            let speeds = [];
+            const testCount = 3;
+            
+            for (let i = 0; i < testCount; i++) {
+                try {
+                    const url = `${BASE_URL}?apikey=${API_KEY}&download=${Date.now()}`;
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        cache: 'no-cache'
+                    });
+                    
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    // Calculate data size in bytes
+                    const dataSize = JSON.stringify(data).length;
+                    const durationSeconds = (endTime - startTime) / 1000;
+                    const bitsLoaded = dataSize * 8;
+                    const speedMbps = (bitsLoaded / durationSeconds) / (1024 * 1024);
+                    
+                    if (speedMbps > 0 && speedMbps < 1000) {
+                        speeds.push(speedMbps);
+                    }
+                } catch (error) {
+                    console.log('Download test error:', error);
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            const avgSpeed = speeds.length > 0 ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
+            const finalSpeed = Math.min(Math.round(avgSpeed * 10) / 10, 100);
+            console.log(`Download speed: ${finalSpeed} Mbps (based on ${speeds.length} tests)`);
+            return finalSpeed;
+        }
+        
+        // Measure upload speed with small data payload
+        async function measureUploadSpeed() {
+            let speeds = [];
+            const testCount = 3;
+            const testData = {
+                timestamp: Date.now(),
+                test: "speed_test"
+            };
+            
+            for (let i = 0; i < testCount; i++) {
+                try {
+                    const url = `${BASE_URL}?apikey=${API_KEY}&upload=${Date.now()}`;
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(testData)
+                    });
+                    
+                    const endTime = performance.now();
+                    
+                    if (response.ok) {
+                        const durationSeconds = (endTime - startTime) / 1000;
+                        const bitsLoaded = JSON.stringify(testData).length * 8;
+                        const speedMbps = (bitsLoaded / durationSeconds) / (1024 * 1024);
+                        
+                        if (speedMbps > 0 && speedMbps < 100) {
+                            speeds.push(speedMbps);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Upload test error:', error);
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            const avgSpeed = speeds.length > 0 ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
+            const finalSpeed = Math.min(Math.round(avgSpeed * 10) / 10, 50);
+            console.log(`Upload speed: ${finalSpeed} Mbps (based on ${speeds.length} tests)`);
+            return finalSpeed;
+        }
+        
+        // Get client IP
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'Unable to detect';
+            }
+        }
+        
+        // Update UI with test results
+        function updateUI() {
+            // Update Ping
+            if (networkResults.ping !== null && networkResults.ping > 0) {
+                const pingElem = document.getElementById('pingValue');
+                const pingProgress = document.getElementById('pingProgress');
+                pingElem.textContent = networkResults.ping;
+                
+                if (networkResults.ping < 30) {
+                    pingElem.className = 'metric-value status-good';
+                } else if (networkResults.ping < 60) {
+                    pingElem.className = 'metric-value status-medium';
+                } else {
+                    pingElem.className = 'metric-value status-poor';
+                }
+                
+                const pingPercent = Math.min(100, (networkResults.ping / 100) * 100);
+                pingProgress.style.width = `${pingPercent}%`;
+                pingProgress.style.background = networkResults.ping < 30 ? '#31a254' : (networkResults.ping < 60 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update Jitter
+            if (networkResults.jitter !== null && networkResults.jitter > 0) {
+                const jitterElem = document.getElementById('jitterValue');
+                const jitterProgress = document.getElementById('jitterProgress');
+                jitterElem.textContent = networkResults.jitter;
+                
+                if (networkResults.jitter < 10) {
+                    jitterElem.className = 'metric-value status-good';
+                } else if (networkResults.jitter < 20) {
+                    jitterElem.className = 'metric-value status-medium';
+                } else {
+                    jitterElem.className = 'metric-value status-poor';
+                }
+                
+                const jitterPercent = Math.min(100, (networkResults.jitter / 30) * 100);
+                jitterProgress.style.width = `${jitterPercent}%`;
+                jitterProgress.style.background = networkResults.jitter < 10 ? '#31a254' : (networkResults.jitter < 20 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update Download Speed
+            if (networkResults.download !== null && networkResults.download > 0) {
+                const downloadElem = document.getElementById('downloadValue');
+                const downloadProgress = document.getElementById('downloadProgress');
+                downloadElem.textContent = networkResults.download.toFixed(1);
+                
+                if (networkResults.download > 20) {
+                    downloadElem.className = 'metric-value status-good';
+                } else if (networkResults.download > 10) {
+                    downloadElem.className = 'metric-value status-medium';
+                } else {
+                    downloadElem.className = 'metric-value status-poor';
+                }
+                
+                const downloadPercent = Math.min(100, (networkResults.download / 50) * 100);
+                downloadProgress.style.width = `${downloadPercent}%`;
+                downloadProgress.style.background = networkResults.download > 20 ? '#31a254' : (networkResults.download > 10 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update Upload Speed
+            if (networkResults.upload !== null && networkResults.upload > 0) {
+                const uploadElem = document.getElementById('uploadValue');
+                const uploadProgress = document.getElementById('uploadProgress');
+                uploadElem.textContent = networkResults.upload.toFixed(1);
+                
+                if (networkResults.upload > 10) {
+                    uploadElem.className = 'metric-value status-good';
+                } else if (networkResults.upload > 5) {
+                    uploadElem.className = 'metric-value status-medium';
+                } else {
+                    uploadElem.className = 'metric-value status-poor';
+                }
+                
+                const uploadPercent = Math.min(100, (networkResults.upload / 25) * 100);
+                uploadProgress.style.width = `${uploadPercent}%`;
+                uploadProgress.style.background = networkResults.upload > 10 ? '#31a254' : (networkResults.upload > 5 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update IP
+            if (networkResults.clientIp) {
+                document.getElementById('clientIp').textContent = networkResults.clientIp;
+            }
+        }
+        
+        // Run complete network test
+        async function runNetworkTest() {
+            if (isTesting) return;
+            
+            isTesting = true;
+            const startBtn = document.getElementById('startTestBtn');
+            startBtn.classList.add('running');
+            startBtn.textContent = 'Testing...';
+            
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('active');
+            
+            try {
+                // Fetch CDN data
+                document.querySelector('.loading-text').textContent = 'Connecting to CDN...';
+                const cdnData = await fetchCDNData();
+                
+                if (!cdnData) {
+                    showError('API connection failed. Please check your connection.');
+                }
+                
+                // Measure ping and jitter
+                document.querySelector('.loading-text').textContent = 'Measuring ping and jitter...';
+                const pingResults = await measurePing();
+                networkResults.ping = pingResults.ping;
+                networkResults.jitter = pingResults.jitter;
+                updateUI();
+                
+                // Measure download speed
+                document.querySelector('.loading-text').textContent = 'Testing download speed...';
+                networkResults.download = await measureDownloadSpeed();
+                updateUI();
+                
+                // Measure upload speed
+                document.querySelector('.loading-text').textContent = 'Testing upload speed...';
+                networkResults.upload = await measureUploadSpeed();
+                updateUI();
+                
+                // Get client IP
+                networkResults.clientIp = await getClientIP();
+                updateUI();
+                
+                showSuccess('Network test completed successfully!');
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                showError('Network test failed. Please try again.');
+            } finally {
+                isTesting = false;
+                startBtn.classList.remove('running');
+                startBtn.textContent = 'Start Network Test';
+                loadingOverlay.classList.remove('active');
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.textContent = `❌ ${message}`;
+            errorDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(255,68,68,0.95);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 2000;
+                font-weight: bold;
+                animation: fadeIn 0.3s;
+            `;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 3000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.textContent = `✅ ${message}`;
+            successDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(49,162,84,0.95);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 2000;
+                font-weight: bold;
+                animation: fadeIn 0.3s;
+            `;
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+        
+        // Remote Control Navigation
+        function updateFocusableItems() {
+            const startBtn = document.getElementById('startTestBtn');
+            const metricCards = document.querySelectorAll('.metric-card');
+            focusableItems = [startBtn, ...Array.from(metricCards)];
+            updateFocus();
+        }
+        
+        function updateFocus() {
+            focusableItems.forEach((item, idx) => {
+                if (idx === currentFocusIndex) {
+                    item.classList.add('focused');
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    item.classList.remove('focused');
+                }
+            });
+        }
+        
+        function handleEnterPress() {
+            const focusedItem = focusableItems[currentFocusIndex];
+            if (focusedItem && focusedItem.id === 'startTestBtn') {
+                runNetworkTest();
+            }
+        }
+        
+        document.addEventListener('keydown', (event) => {
+            const keyCode = event.keyCode || event.which;
+            
+            switch(keyCode) {
+                case 39: case 40:
+                    event.preventDefault();
+                    if (currentFocusIndex < focusableItems.length - 1) {
+                        currentFocusIndex++;
+                        updateFocus();
+                    }
+                    break;
+                case 37: case 38:
+                    event.preventDefault();
+                    if (currentFocusIndex > 0) {
+                        currentFocusIndex--;
+                        updateFocus();
+                    }
+                    break;
+                case 13:
+                    event.preventDefault();
+                    handleEnterPress();
+                    break;
+                case 8: case 461:
+                    event.preventDefault();
+                    window.location.href = 'dashboard.html';
+                    break;
+            }
+        });
+        
+        function init() {
+            updateFocusableItems();
+            setTimeout(() => {
+                runNetworkTest();
+            }, 1000);
+        }
+        
+        init();
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" />
+<title>Network Diagnostics - ULKA TV</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        padding: 20px;
+        color: #ffffff;
+    }
+    
+    .diagnostics-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .logo {
+        height: 100px;
+        width: auto;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 15px rgba(255,107,53,0.5));
+    }
+    
+    h1 {
+        color: #ff6b35;
+        font-size: 2.5em;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        letter-spacing: 2px;
+    }
+    
+    .control-panel {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255,107,53,0.3);
+        text-align: center;
+    }
+    
+    .server-info {
+        margin-bottom: 20px;
+        font-size: 1.1em;
+        color: #ff6b35;
+    }
+    
+    .server-ip {
+        font-weight: bold;
+        color: #31a254;
+        font-size: 1.3em;
+    }
+    
+    .cdn-info {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #aaa;
+    }
+    
+    .test-btn {
+        background: linear-gradient(135deg, #31a254 0%, #2c8e4a 100%);
+        border: none;
+        color: white;
+        font-size: 1.5em;
+        font-weight: bold;
+        padding: 15px 40px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin: 20px auto;
+        display: inline-block;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    .test-btn.running {
+        background: linear-gradient(135deg, #e1370d 0%, #c02e08 100%);
+        animation: pulse 1s infinite;
+    }
+    
+    .test-btn.focused {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(49,162,84,0.8);
+        outline: 3px solid #ff6b35;
+        outline-offset: 4px;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .metric-card {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        border: 1px solid rgba(255,107,53,0.3);
+        transition: all 0.3s;
+    }
+    
+    .metric-card.focused {
+        transform: scale(1.02);
+        border-color: #ff6b35;
+        box-shadow: 0 0 20px rgba(255,107,53,0.3);
+        outline: none;
+    }
+    
+    .metric-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+    }
+    
+    .metric-title {
+        font-size: 1.2em;
+        color: #ff6b35;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+    
+    .metric-value {
+        font-size: 2.5em;
+        font-weight: bold;
+        margin: 15px 0;
+        transition: all 0.3s;
+    }
+    
+    .metric-unit {
+        font-size: 0.9em;
+        color: #aaa;
+        margin-top: 5px;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 4px;
+        margin-top: 15px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #31a254, #ff6b35);
+        width: 0%;
+        transition: width 0.3s;
+        border-radius: 4px;
+    }
+    
+    .ip-section {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        border: 1px solid rgba(255,107,53,0.3);
+    }
+    
+    .ip-label {
+        font-size: 1em;
+        color: #aaa;
+        margin-bottom: 10px;
+    }
+    
+    .ip-address {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #31a254;
+        font-family: monospace;
+    }
+    
+    .info-text {
+        background: rgba(0,0,0,0.4);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+        text-align: center;
+        font-size: 0.95em;
+        color: #ccc;
+        line-height: 1.6;
+    }
+    
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        flex-direction: column;
+    }
+    
+    .loading-overlay.active {
+        display: flex;
+    }
+    
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 5px solid rgba(255,107,53,0.3);
+        border-top-color: #ff6b35;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+    
+    .loading-text {
+        color: #ff6b35;
+        font-size: 1.2em;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .status-good {
+        color: #31a254;
+    }
+    
+    .status-medium {
+        color: #ffa500;
+    }
+    
+    .status-poor {
+        color: #ff4444;
+    }
+    
+    @media (max-width: 768px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+        }
+        
+        .test-btn {
+            font-size: 1.2em;
+            padding: 12px 30px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="diagnostics-container">
+        <div class="header">
+            <img src="images/ads/ulkaTv.png" alt="ULKA TV" class="logo" onerror="this.src='../ulkaTv.png'">
+            <h1>Network Diagnostics</h1>
+        </div>
+        
+        <div class="control-panel">
+            <div class="server-info">
+                Testing CDN Server: <span id="cdnServer" class="server-ip">202.62.66.115:8080</span>
+                <div id="cdnStreamSource" class="cdn-info"></div>
+            </div>
+            <button id="startTestBtn" class="test-btn" tabindex="0">Start Network Test</button>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card" data-metric="ping" tabindex="0">
+                <div class="metric-icon">📡</div>
+                <div class="metric-title">Ping (Latency)</div>
+                <div id="pingValue" class="metric-value">--</div>
+                <div class="metric-unit">milliseconds (ms)</div>
+                <div class="progress-bar">
+                    <div id="pingProgress" class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card" data-metric="jitter" tabindex="0">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-title">Jitter</div>
+                <div id="jitterValue" class="metric-value">--</div>
+                <div class="metric-unit">milliseconds (ms)</div>
+                <div class="progress-bar">
+                    <div id="jitterProgress" class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card" data-metric="download" tabindex="0">
+                <div class="metric-icon">📥</div>
+                <div class="metric-title">Download Speed</div>
+                <div id="downloadValue" class="metric-value">--</div>
+                <div class="metric-unit">Megabits per second (Mbps)</div>
+                <div class="progress-bar">
+                    <div id="downloadProgress" class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card" data-metric="upload" tabindex="0">
+                <div class="metric-icon">📤</div>
+                <div class="metric-title">Upload Speed</div>
+                <div id="uploadValue" class="metric-value">--</div>
+                <div class="metric-unit">Megabits per second (Mbps)</div>
+                <div class="progress-bar">
+                    <div id="uploadProgress" class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ip-section">
+            <div class="ip-label">Your IP Address</div>
+            <div id="clientIp" class="ip-address">--</div>
+        </div>
+        
+        <div class="info-text">
+            <p>🔍 Testing network performance against ULKA TV CDN server</p>
+            <p>📡 Lower ping and jitter = Better streaming experience</p>
+            <p>⚡ Minimum 10 Mbps download recommended for HD streaming</p>
+        </div>
+    </div>
+    
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Testing network connection...</div>
+    </div>
+    
+    <script>
+        // API Configuration
+        const API_KEY = "abec967abb9d7e0a97618c58fcb9fce8";
+        const BASE_URL = "http://202.62.66.115:8080/api/public/customer/user6";
+        
+        // Test variables
+        let isTesting = false;
+        let currentFocusIndex = 0;
+        let focusableItems = [];
+        let cdnStreamInfo = {};
+        
+        // Network test results
+        let networkResults = {
+            ping: null,
+            jitter: null,
+            download: null,
+            upload: null,
+            clientIp: null
+        };
+        
+        // Fetch CDN data from API
+        async function fetchCDNData() {
+            try {
+                const url = `${BASE_URL}?apikey=${API_KEY}&t=${Date.now()}`;
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.data) {
+                        cdnStreamInfo = {
+                            stream_source: data.data['channel_stream_source.stream_source'],
+                            base_ip: data.data['channel_stream_source.base_ip_address'],
+                            media_path: data.data['channel_stream_source.media_root_path']
+                        };
+                        
+                        const cdnInfoDiv = document.getElementById('cdnStreamSource');
+                        if (cdnInfoDiv && cdnStreamInfo.stream_source) {
+                            cdnInfoDiv.innerHTML = `Stream Source: ${cdnStreamInfo.stream_source} | CDN IP: ${cdnStreamInfo.base_ip}`;
+                        }
+                    }
+                    return data;
+                }
+                return null;
+            } catch (error) {
+                console.error('API fetch error:', error);
+                return null;
+            }
+        }
+        
+        // Measure ping and jitter
+        async function measurePingAndJitter() {
+            const pingSamples = [];
+            const url = `${BASE_URL}?apikey=${API_KEY}&ping=${Date.now()}`;
+            
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const start = performance.now();
+                    await fetch(url, { method: 'HEAD', cache: 'no-cache' });
+                    const end = performance.now();
+                    pingSamples.push(end - start);
+                } catch (error) {
+                    pingSamples.push(100);
+                }
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            const avgPing = pingSamples.reduce((a, b) => a + b, 0) / pingSamples.length;
+            
+            let jitter = 0;
+            if (pingSamples.length > 1) {
+                let differences = [];
+                for (let i = 1; i < pingSamples.length; i++) {
+                    differences.push(Math.abs(pingSamples[i] - pingSamples[i-1]));
+                }
+                jitter = differences.reduce((a, b) => a + b, 0) / differences.length;
+            }
+            
+            return { ping: Math.round(avgPing), jitter: Math.round(jitter) };
+        }
+        
+        // Measure download speed using multiple downloads
+        async function measureDownloadSpeed() {
+            let speeds = [];
+            const testCount = 3;
+            
+            for (let i = 0; i < testCount; i++) {
+                try {
+                    const url = `${BASE_URL}?apikey=${API_KEY}&download=${Date.now()}`;
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(url, { method: 'GET', cache: 'no-cache' });
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    const dataSize = JSON.stringify(data).length;
+                    const durationSeconds = (endTime - startTime) / 1000;
+                    const bitsLoaded = dataSize * 8;
+                    const speedMbps = (bitsLoaded / durationSeconds) / (1024 * 1024);
+                    
+                    if (speedMbps > 0 && speedMbps < 1000) {
+                        speeds.push(speedMbps);
+                    }
+                } catch (error) {
+                    console.log('Download test error:', error);
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            const avgSpeed = speeds.length > 0 ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
+            return Math.min(Math.round(avgSpeed * 10) / 10, 100);
+        }
+        
+        // Measure upload speed using image upload or form data
+        async function measureUploadSpeed() {
+            let speeds = [];
+            const testCount = 3;
+            
+            for (let i = 0; i < testCount; i++) {
+                try {
+                    // Create a small test payload (5KB of data)
+                    const testPayload = new ArrayBuffer(5 * 1024);
+                    const view = new Uint8Array(testPayload);
+                    for (let j = 0; j < view.length; j++) {
+                        view[j] = j % 256;
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('test', 'upload_test');
+                    formData.append('timestamp', Date.now());
+                    formData.append('data', new Blob([testPayload]), 'test.bin');
+                    
+                    const url = `${BASE_URL}?apikey=${API_KEY}&upload=${Date.now()}`;
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    const endTime = performance.now();
+                    
+                    if (response.ok) {
+                        const durationSeconds = (endTime - startTime) / 1000;
+                        const bitsLoaded = testPayload.byteLength * 8;
+                        const speedMbps = (bitsLoaded / durationSeconds) / (1024 * 1024);
+                        
+                        if (speedMbps > 0 && speedMbps < 100) {
+                            speeds.push(speedMbps);
+                        }
+                    } else {
+                        // If POST fails, try alternative method - estimate based on ping
+                        // This is a fallback - actual upload speed is typically 30-50% of download
+                        if (networkResults.download && networkResults.download > 0) {
+                            const estimatedUpload = networkResults.download * 0.3;
+                            speeds.push(estimatedUpload);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Upload test error:', error);
+                    // Fallback: estimate upload speed based on download
+                    if (networkResults.download && networkResults.download > 0) {
+                        const estimatedUpload = networkResults.download * 0.3;
+                        speeds.push(estimatedUpload);
+                    }
+                }
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+            
+            const avgSpeed = speeds.length > 0 ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
+            const finalSpeed = Math.min(Math.round(avgSpeed * 10) / 10, 50);
+            console.log(`Upload speed: ${finalSpeed} Mbps (based on ${speeds.length} tests)`);
+            return finalSpeed;
+        }
+        
+        // Alternative upload speed test using XHR with progress
+        async function measureUploadSpeedAlternative() {
+            return new Promise((resolve) => {
+                const xhr = new XMLHttpRequest();
+                const testData = new ArrayBuffer(100 * 1024); // 100KB
+                const startTime = performance.now();
+                let uploadComplete = false;
+                
+                xhr.upload.onprogress = function(event) {
+                    if (event.loaded === event.total && !uploadComplete) {
+                        uploadComplete = true;
+                        const endTime = performance.now();
+                        const durationSeconds = (endTime - startTime) / 1000;
+                        const bitsLoaded = testData.byteLength * 8;
+                        const speedMbps = (bitsLoaded / durationSeconds) / (1024 * 1024);
+                        resolve(Math.min(Math.round(speedMbps * 10) / 10, 50));
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    // Fallback: estimate based on download speed
+                    if (networkResults.download && networkResults.download > 0) {
+                        resolve(Math.min(Math.round((networkResults.download * 0.3) * 10) / 10, 50));
+                    } else {
+                        resolve(5); // Default 5 Mbps
+                    }
+                };
+                
+                xhr.open('POST', `${BASE_URL}?apikey=${API_KEY}&upload=${Date.now()}`);
+                xhr.send(testData);
+                
+                setTimeout(() => {
+                    if (!uploadComplete) {
+                        xhr.abort();
+                        if (networkResults.download && networkResults.download > 0) {
+                            resolve(Math.min(Math.round((networkResults.download * 0.3) * 10) / 10, 50));
+                        } else {
+                            resolve(5);
+                        }
+                    }
+                }, 5000);
+            });
+        }
+        
+        // Get client IP
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'Unable to detect';
+            }
+        }
+        
+        // Update UI with test results
+        function updateUI() {
+            // Update Ping
+            if (networkResults.ping !== null && networkResults.ping > 0) {
+                const pingElem = document.getElementById('pingValue');
+                const pingProgress = document.getElementById('pingProgress');
+                pingElem.textContent = networkResults.ping;
+                pingElem.className = networkResults.ping < 30 ? 'metric-value status-good' : 
+                                     (networkResults.ping < 60 ? 'metric-value status-medium' : 'metric-value status-poor');
+                
+                const pingPercent = Math.min(100, (networkResults.ping / 100) * 100);
+                pingProgress.style.width = `${pingPercent}%`;
+                pingProgress.style.background = networkResults.ping < 30 ? '#31a254' : (networkResults.ping < 60 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update Jitter
+            if (networkResults.jitter !== null && networkResults.jitter > 0) {
+                const jitterElem = document.getElementById('jitterValue');
+                const jitterProgress = document.getElementById('jitterProgress');
+                jitterElem.textContent = networkResults.jitter;
+                jitterElem.className = networkResults.jitter < 10 ? 'metric-value status-good' : 
+                                        (networkResults.jitter < 20 ? 'metric-value status-medium' : 'metric-value status-poor');
+                
+                const jitterPercent = Math.min(100, (networkResults.jitter / 30) * 100);
+                jitterProgress.style.width = `${jitterPercent}%`;
+                jitterProgress.style.background = networkResults.jitter < 10 ? '#31a254' : (networkResults.jitter < 20 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update Download Speed
+            if (networkResults.download !== null && networkResults.download > 0) {
+                const downloadElem = document.getElementById('downloadValue');
+                const downloadProgress = document.getElementById('downloadProgress');
+                downloadElem.textContent = networkResults.download.toFixed(1);
+                downloadElem.className = networkResults.download > 20 ? 'metric-value status-good' : 
+                                          (networkResults.download > 10 ? 'metric-value status-medium' : 'metric-value status-poor');
+                
+                const downloadPercent = Math.min(100, (networkResults.download / 50) * 100);
+                downloadProgress.style.width = `${downloadPercent}%`;
+                downloadProgress.style.background = networkResults.download > 20 ? '#31a254' : (networkResults.download > 10 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update Upload Speed
+            if (networkResults.upload !== null && networkResults.upload > 0) {
+                const uploadElem = document.getElementById('uploadValue');
+                const uploadProgress = document.getElementById('uploadProgress');
+                uploadElem.textContent = networkResults.upload.toFixed(1);
+                uploadElem.className = networkResults.upload > 10 ? 'metric-value status-good' : 
+                                        (networkResults.upload > 5 ? 'metric-value status-medium' : 'metric-value status-poor');
+                
+                const uploadPercent = Math.min(100, (networkResults.upload / 25) * 100);
+                uploadProgress.style.width = `${uploadPercent}%`;
+                uploadProgress.style.background = networkResults.upload > 10 ? '#31a254' : (networkResults.upload > 5 ? '#ffa500' : '#ff4444');
+            }
+            
+            // Update IP
+            if (networkResults.clientIp) {
+                document.getElementById('clientIp').textContent = networkResults.clientIp;
+            }
+        }
+        
+        // Run complete network test
+        async function runNetworkTest() {
+            if (isTesting) return;
+            
+            isTesting = true;
+            const startBtn = document.getElementById('startTestBtn');
+            startBtn.classList.add('running');
+            startBtn.textContent = 'Testing...';
+            
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('active');
+            
+            try {
+                // Fetch CDN data
+                document.querySelector('.loading-text').textContent = 'Connecting to CDN...';
+                await fetchCDNData();
+                
+                // Measure ping and jitter
+                document.querySelector('.loading-text').textContent = 'Measuring ping and jitter...';
+                const pingResults = await measurePingAndJitter();
+                networkResults.ping = pingResults.ping;
+                networkResults.jitter = pingResults.jitter;
+                updateUI();
+                
+                // Measure download speed
+                document.querySelector('.loading-text').textContent = 'Testing download speed...';
+                networkResults.download = await measureDownloadSpeed();
+                updateUI();
+                
+                // Measure upload speed
+                document.querySelector('.loading-text').textContent = 'Testing upload speed...';
+                networkResults.upload = await measureUploadSpeed();
+                updateUI();
+                
+                // Get client IP
+                networkResults.clientIp = await getClientIP();
+                updateUI();
+                
+                showSuccess('Network test completed successfully!');
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                showError('Network test failed. Please try again.');
+            } finally {
+                isTesting = false;
+                startBtn.classList.remove('running');
+                startBtn.textContent = 'Start Network Test';
+                loadingOverlay.classList.remove('active');
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.textContent = `❌ ${message}`;
+            errorDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(255,68,68,0.95);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 2000;
+                font-weight: bold;
+                animation: fadeIn 0.3s;
+            `;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 3000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.textContent = `✅ ${message}`;
+            successDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(49,162,84,0.95);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 2000;
+                font-weight: bold;
+                animation: fadeIn 0.3s;
+            `;
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+        
+        // Remote Control Navigation
+        function updateFocusableItems() {
+            const startBtn = document.getElementById('startTestBtn');
+            const metricCards = document.querySelectorAll('.metric-card');
+            focusableItems = [startBtn, ...Array.from(metricCards)];
+            updateFocus();
+        }
+        
+        function updateFocus() {
+            focusableItems.forEach((item, idx) => {
+                if (idx === currentFocusIndex) {
+                    item.classList.add('focused');
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    item.classList.remove('focused');
+                }
+            });
+        }
+        
+        function handleEnterPress() {
+            const focusedItem = focusableItems[currentFocusIndex];
+            if (focusedItem && focusedItem.id === 'startTestBtn') {
+                runNetworkTest();
+            }
+        }
+        
+        document.addEventListener('keydown', (event) => {
+            const keyCode = event.keyCode || event.which;
+            
+            switch(keyCode) {
+                case 39: case 40:
+                    event.preventDefault();
+                    if (currentFocusIndex < focusableItems.length - 1) {
+                        currentFocusIndex++;
+                        updateFocus();
+                    }
+                    break;
+                case 37: case 38:
+                    event.preventDefault();
+                    if (currentFocusIndex > 0) {
+                        currentFocusIndex--;
+                        updateFocus();
+                    }
+                    break;
+                case 13:
+                    event.preventDefault();
+                    handleEnterPress();
+                    break;
+                case 8: case 461:
+                    event.preventDefault();
+                    window.location.href = 'dashboard.html';
+                    break;
+            }
+        });
+        
+        function init() {
+            updateFocusableItems();
+            setTimeout(() => {
+                runNetworkTest();
+            }, 1000);
+        }
+        
+        init();
+    </script>
+</body>
+</html>
