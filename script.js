@@ -27,7 +27,7 @@ const centerIconsData = [
 ];
 
 let favoriteChannels = [
-    { title: "YouTube", img: "images/appstore/ottapps/youtube.png", url: "https://www.youtube.com/", description: "Watch unlimited videos." },
+    { title: "YouTube", img: "images/appstore/ottapps/youtube.png", url: "https://www.youtube.com/tv", description: "Watch unlimited videos." },
     { title: "jiohotstar", img: "images/appstore/ottapps/jiohotstar.png", url: "https://livingroom.hotstar.com", description: "Best entertainment videos." },
     { title: "aha", img: "images/appstore/ottapps/aha.png", url: "https://www.aha.video/webepisode/chef-mantra-s05-ep6/", description: "Check Network Status." },
     { title: "netflix", img: "images/appstore/ottapps/netflix.png", url: "https://www.netflix.com/in/login", description: "Entertainment and sports." },
